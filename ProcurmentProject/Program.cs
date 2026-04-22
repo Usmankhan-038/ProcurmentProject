@@ -74,6 +74,9 @@ builder.Services.AddScoped<IRole,RoleRepository>();
 builder.Services.AddScoped<IProduct, ProductRepository>();
 builder.Services.AddScoped<IPurchasedRequisition, PurchasedRequisitionRepository>();
 builder.Services.AddScoped<ISupplier, SupplierRepository>();
+builder.Services.AddScoped<IRequestForQuotation, RequestForQuotationRepository>();
+builder.Services.AddScoped<ISupplierQuotation, SupplierQuotationRepository>();
+builder.Services.AddScoped<ISuppliesDelivery, SuppliesDeliveryRepository>();
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 

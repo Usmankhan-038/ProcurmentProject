@@ -1,4 +1,5 @@
-﻿using ProcurmentProject.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
@@ -83,9 +84,10 @@ namespace ProcurmentProject.Repositories
             }).ToList();
             foreach (var sup in suppliers)
             {
-
-                var port = "7074";
-                var messageBody = $@"
+                if (sup.Email != null)
+                {
+                    var port = "7074";
+                    var messageBody = $@"
                     <div style=""font-family: 'Segoe UI', Arial, sans-serif; color: #202124; line-height: 1.6;"">
                         <p>Dear <strong>{sup.CompanyName}</strong>,</p>
 
@@ -117,8 +119,9 @@ namespace ProcurmentProject.Repositories
                             Note: This is a system-generated email. Please do not reply.
                         </p>
                     </div>";
-                var subject = $"Quotation For RFQ RFQ-{rfq.Id}";
-                await _email.SendMail(sup.Email!, subject, messageBody);
+                    var subject = $"Quotation For RFQ RFQ-{rfq.Id}";
+                    await _email.SendMail(sup.Email!, subject, messageBody);
+                }
             }
             return (true, "Send Quotation to All Supplier");
         }
@@ -144,9 +147,10 @@ namespace ProcurmentProject.Repositories
            }).ToList();
             foreach (var sup in suppliers)
             {
-
-                var port = "7074";
-                var messageBody = $@"
+                if(sup.Email != null)
+                {
+                    var port = "7074";
+                    var messageBody = $@"
                     <div style=""font-family: 'Segoe UI', Arial, sans-serif; color: #202124; line-height: 1.6;"">
                         <p>Dear <strong>{sup.CompanyName}</strong>,</p>
 
@@ -178,8 +182,10 @@ namespace ProcurmentProject.Repositories
                             Note: This is a system-generated email. Please do not reply.
                         </p>
                     </div>";
-                var subject = $"Quotation For RFQ RFQ-{rfq.Id}";
-                await _email.SendMail(sup.Email!, subject, messageBody);
+                    var subject = $"Quotation For RFQ RFQ-{rfq.Id}";
+                    await _email.SendMail(sup.Email!, subject, messageBody);
+                }
+             
             }
             return (true, "Send Quotation to All Supplier");
         }
@@ -187,9 +193,32 @@ namespace ProcurmentProject.Repositories
         public async Task<(bool success, string message, object? rfqs)> GetAllRfqs()
         {
 
+            var rfqs = await _context.Rfqs.Where(r => r.Deleted == 0)
+                .Join(_context.PurchasedRequisitions, r => r.PrId, p => p.Id, (r, p) => new { r, p })
+                .Join(_context.PrProducts, combined => combined.p.Id, prProd => prProd.Id, (combined, prProd) => new {combined, prProd})
+                .Join(_context.Products, prCombine => prCombine.prProd.ProductId, prod => prod.Id, (prCombine, prod) => new
+                {
+                    RfqId = prCombine.combined.r.Id,
+                    RfqStatus = prCombine.combined.r.Status,
+                    PrTitle = prCombine.combined.p.Title,
+                    PrQuantity = prCombine.combined.p.Quantity,
+                    PrEstimatedBudget = prCombine.combined.p.EstimatedBudget,
+                    PrDeliveryDate = prCombine.combined.p.DeliveryDate,
+                    PrNote = prCombine.combined.p.Note,
+                    PrProducts = new 
+                    {
+                        ProductName = prod.Name,
+                        ProductCompany = prod.Company,
+                        ProductDescription = prod.Description,
+                        ProductUPC = prod.Upc,
+                    }
 
-
-            return (true, "Send Quotation to All Supplier",null);
+                }).ToListAsync();
+            if(rfqs == null )
+            {
+                return (false, "No RFQ Found", null);
+            }
+            return (true, "Successfully Fetch Rfqs",rfqs);
         }
         public async Task<(bool success, string message)> UpdateRfq(int rfqId, RfqDto rfqDto)
         {
