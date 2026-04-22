@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
@@ -6,6 +7,7 @@ namespace ProcurmentProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RequestForQuotationController : ControllerBase
     {
         private readonly IRequestForQuotation _rfq;

@@ -10,6 +10,7 @@ namespace ProcurmentProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PurchasedRequisitionController : ControllerBase
     {
         private readonly IPurchasedRequisition _pr;
