@@ -51,7 +51,7 @@ namespace ProcurmentProject.Controllers
         [HttpGet("get-product-by-Id")]
         [HasPermission("product", "read")]
 
-        public async Task<IActionResult> GetProductById(int Id)
+        public async Task<IActionResult> GetProductById([FromQuery] int Id)
         {
             var result = await _prod.getProductById(Id);
             if (!result.success)

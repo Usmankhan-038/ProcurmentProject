@@ -10,10 +10,12 @@ namespace ProcurmentProject.Repositories
     {
         private readonly ProcurmentSystemContext _context;
         private readonly IEmailService _email;
-        public RequestForQuotationRepository(ProcurmentSystemContext context, IEmailService email)
+        private readonly IConfiguration _config;
+        public RequestForQuotationRepository(ProcurmentSystemContext context, IEmailService email, IConfiguration config)
         {
             _context = context;
             _email = email;
+            _config = config;
         }
         public async Task<(bool success, string message)> CreateRfq(int PrId, RfqDto rfqDto)
         {
@@ -32,14 +34,14 @@ namespace ProcurmentProject.Repositories
             if (rfqDto.Attachment != null)
             {
 
-                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads", "rfqs");
+                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "upload", "rfqs");
                 if (!Directory.Exists(folderPath))
                 {
                     Directory.CreateDirectory(folderPath);
                 }
                 var OrignalFileName = Path.GetFileName(rfqDto.Attachment.FileName);
                 var extension = Path.GetExtension(rfqDto.Attachment.FileName);
-                var encodedFileName = Guid.NewGuid().ToString() + DateTime.Now + extension;
+                var encodedFileName = Guid.NewGuid().ToString() + extension;
 
                 string fullPath = Path.Combine(folderPath, encodedFileName);
 
@@ -192,6 +194,7 @@ namespace ProcurmentProject.Repositories
 
         public async Task<(bool success, string message, object? rfqs)> GetAllRfqs()
         {
+            var baseUrl = _config.GetConnectionString("BaseUrl");
 
             var rfqs = await _context.Rfqs.Where(r => r.Deleted == 0)
                 .Join(_context.PurchasedRequisitions, r => r.PrId, p => p.Id, (r, p) => new { r, p })
@@ -211,7 +214,16 @@ namespace ProcurmentProject.Repositories
                         ProductCompany = prod.Company,
                         ProductDescription = prod.Description,
                         ProductUPC = prod.Upc,
-                    }
+                    },
+                    Documents = _context.Documents
+                    .Where(d => d.BelongName == "rfq" && d.BelongId == prCombine.combined.r.Id)
+                    .Select(d => new
+                    {
+                        d.Id,
+                        DocumentUrl =  d.Url + d.EncodedFileName
+                       
+                    }).ToList()
+                
 
                 }).ToListAsync();
             if(rfqs == null )

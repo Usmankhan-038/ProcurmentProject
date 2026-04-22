@@ -88,7 +88,8 @@ namespace ProcurmentProject.Repositories
                        productName = pr.Product.Name,
                        company = pr.Product.Company
                    }).ToList()
-                }).ToListAsync();
+                }).Distinct()
+                .ToListAsync();
 
             if (prRequest == null)
             {
