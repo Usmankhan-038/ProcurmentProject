@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProcurmentProject.Data;
+using ProcurmentProject.Filters;
 using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
@@ -65,7 +66,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-
+// Db Injection
 builder.Services.AddDbContext<ProcurmentSystemContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUser, UserRepository>();
@@ -78,11 +79,12 @@ builder.Services.AddScoped<IRequestForQuotation, RequestForQuotationRepository>(
 builder.Services.AddScoped<ISupplierQuotation, SupplierQuotationRepository>();
 builder.Services.AddScoped<ISuppliesDelivery, SuppliesDeliveryRepository>();
 
+// services Dependency Injection
 builder.Services.AddScoped<IEmailService, EmailService>();
-
 
 // stateless class one instance for whole project
 builder.Services.AddSingleton<PermissionChecker>();
+
 
 var app = builder.Build();
 

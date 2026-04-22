@@ -2,6 +2,7 @@
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Dto;
 using Microsoft.AspNetCore.Authorization;
+using ProcurmentProject.Filters;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,6 +20,7 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("add-role")]
+        [HasPermission("role","create")]
         public async Task<IActionResult> AddRole([FromBody] RoleDto role)
         {
             if (!ModelState.IsValid)
@@ -34,12 +36,16 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-userroles")]
+        [HasPermission("role", "read")]
+
         public async Task<IActionResult> GetUserRole()
         {
             var userRole = await _role.GetAllUserRole();
             return Ok(userRole);
         }
         [HttpDelete("delete-role")]
+        [HasPermission("role", "delete")]
+
         public async Task<IActionResult> DeleteRole([FromBody] int id)
         {
             var deletedRole = await _role.DeleteRole(id);
@@ -51,6 +57,8 @@ namespace ProcurmentProject.Controllers
         }
    
         [HttpPost("Update-role")]
+        [HasPermission("role", "update")]
+
         public async Task<IActionResult> UpdateRole(int id,[FromForm] RoleDto role)
         {
             var updateRole = await _role.UpdateRole(id,role);

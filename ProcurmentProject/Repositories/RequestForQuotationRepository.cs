@@ -102,7 +102,7 @@ namespace ProcurmentProject.Repositories
                         <p>Please click the button below to share the price of the quotation:</p>
 
                         <div style=""margin: 30px 0;"">
-                            <a href=""https://localhost:{port}/api/Quotation/Submit?supplierId={sup.supplierId}&rfqId={rfqId}"" 
+                            <a href=""https://localhost:{port}/swagger/index.html?supplierId={sup.supplierId}&rfqId={rfqId}"" 
                                style=""background-color: #1a73e8; color: white; padding: 12px 25px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;"">
                                Submit Price Quotation
                             </a>
@@ -165,7 +165,7 @@ namespace ProcurmentProject.Repositories
                         <p>Please click the button below to share the price of the quotation:</p>
 
                         <div style=""margin: 30px 0;"">
-                            <a href=""https://localhost:{port}/api/Quotation/Submit?supplierId={sup.supplierId}&rfqId={rfqId}"" 
+                            <a href=""https://localhost:{port}/swagger/index.html?supplierId={sup.supplierId}&rfqId={rfqId}"" 
                                style=""background-color: #1a73e8; color: white; padding: 12px 25px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;"">
                                Submit Price Quotation
                             </a>

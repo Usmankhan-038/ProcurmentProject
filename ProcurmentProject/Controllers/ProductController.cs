@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProcurmentProject.Dto;
+using ProcurmentProject.Filters;
 using ProcurmentProject.Interfaces;
 
 namespace ProcurmentProject.Controllers
@@ -17,6 +18,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("add-Product")]
+        [HasPermission("product", "create")]
+
         public async Task<IActionResult> AddPproduct(ProductDto product)
         {
             if (product == null)
@@ -32,6 +35,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-product")]
+        [HasPermission("product", "read")]
+
         public async Task<IActionResult> GetProduct()
         {
             var result =  _prod.GetAllProduct();
@@ -44,6 +49,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-product-by-Id")]
+        [HasPermission("product", "read")]
+
         public async Task<IActionResult> GetProductById(int Id)
         {
             var result = await _prod.getProductById(Id);
@@ -56,6 +63,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("update-product")]
+        [HasPermission("product", "update")]
+
         public async Task<IActionResult> UpdateProduct(int prodId,ProductDto prod)
         {
             var result = await _prod.UpdateProduct(prodId,prod);
@@ -68,6 +77,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpDelete("delete-product")]
+        [HasPermission("product", "delete")]
+
         public async Task<IActionResult> DeleteProduct(int prodId)
         {
             var result = await _prod.DeleteProduct(prodId);

@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using ProcurmentProject.Dto;
+using ProcurmentProject.Filters;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
-using ProcurmentProject.Dto;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ProcurmentProject.Controllers
 {
@@ -24,6 +25,8 @@ namespace ProcurmentProject.Controllers
 
         [HttpPost]
         [Authorize]
+        [HasPermission("pr_module", "create")]
+
         public async Task<IActionResult> CreatePrRequest(CreatePurchaseRequisitionDto pr)
         {
             string userId =  User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -56,6 +59,8 @@ namespace ProcurmentProject.Controllers
             return Ok("Pr Created Successfully");
         }
         [HttpPost("update-pr")]
+        [HasPermission("pr_module", "update")]
+
         public async Task<IActionResult> UpdatePrRequest(int prId,PurchasedRequisitionDto pr)
         {
             if(prId == null)
@@ -72,6 +77,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-all-pr-request")]
+        [HasPermission("pr_module", "read")]
+
         public async Task<IActionResult> GetAllPrRequest()
         {
             var prRequest = await _pr.GetPrRequest();
@@ -86,8 +93,10 @@ namespace ProcurmentProject.Controllers
             });
         }
 
-        [HttpGet("get-pr-request")]
-        public async Task<IActionResult> GetAllPrRequest(int prId)
+        [HttpGet("get-pr-request-byId")]
+        [HasPermission("pr_module", "read")]
+
+        public async Task<IActionResult> GetAllPrRequestById(int prId)
         {
             var prRequest = await _pr.GetPrRequest(prId);
             if (!prRequest.success)
@@ -102,6 +111,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpDelete("delete-pr-request")]
+        [HasPermission("pr_module", "delete")]
+
         public async Task<IActionResult> DeletePrRequest(int prId)
         {
             var prRequest = await _pr.DeletePrRequest(prId);

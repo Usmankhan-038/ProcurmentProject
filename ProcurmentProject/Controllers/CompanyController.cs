@@ -26,21 +26,7 @@ namespace ProcurmentProject.Controllers
         [Authorize]
         [HttpPost("add-Company")]
         public async Task<ActionResult> AddCompany(CompanyDto company)
-        {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            string permission;
-            var flag = int.TryParse(userId, out int result);
-           
-            var rolePermission = await _role.GetPermissionByUserId(result);
-            permission = rolePermission.permission;
-
-            
-            var userAuthorization = _permissionChecker.HasPermission(permission, "company", "create");
-
-            if(!userAuthorization)
-            {
-                return StatusCode(403,"Unauthorized Request");
-            }
+        { 
             
             if(!ModelState.IsValid)
             {

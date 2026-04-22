@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProcurmentProject.Dto;
+using ProcurmentProject.Filters;
 using ProcurmentProject.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -19,6 +20,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("add-supplier")]
+        [HasPermission("supplier", "create")]
+
         public async Task<IActionResult> AddSupplier([FromBody] SuppliersDto suppliersDto)
         {
             var supplier = await _supplier.AddSupplier(suppliersDto);
@@ -29,6 +32,8 @@ namespace ProcurmentProject.Controllers
             return Ok(supplier.message);
         }
         [HttpPost("update-supplier")]
+        [HasPermission("supplier", "Update")]
+
         public async Task<IActionResult> UpdateSupplier( int Id,[FromBody] SuppliersDto suppliersDto)
         {
             var supplier = await _supplier.UpdateSupplier(Id,suppliersDto);
@@ -40,6 +45,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpDelete("delete-supplier")]
+        [HasPermission("supplier", "delete")]
+
         public async Task<IActionResult> DeleteSupplier([FromBody] int Id)
         {
             var supplier = await _supplier.DeleteSupplier(Id);
@@ -51,6 +58,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-supplier")]
+        [HasPermission("supplier", "read")]
+
         public async Task<IActionResult> GetSupplier()
         {
             var supplier = await _supplier.GetAllSupplier();

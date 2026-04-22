@@ -43,8 +43,6 @@ namespace ProcurmentProject.Repositories
                 UnitPrice = supplierQuotationDto.unitPrice.ToString(),
                 Quantity = supplierQuotationDto.supplierQuantity,
                 FinalPrice = supplierQuotationDto.finalPrice.ToString(),
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
             };
 
             _context.SupplierQuotations.Add(quotation);

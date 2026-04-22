@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProcurmentProject.Dto;
+using ProcurmentProject.Filters;
 using ProcurmentProject.Interfaces;
 
 namespace ProcurmentProject.Controllers
@@ -18,6 +19,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("create-rfq")]
+        [HasPermission("rfq", "create")]
+
         public async Task<IActionResult> CreateRfq(int prId, [FromForm] RfqDto rfqDto)
         {
             var result = await _rfq.CreateRfq(prId, rfqDto);
@@ -29,6 +32,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("send-quotation-to-all-supplier")]
+        [HasPermission("rfq", "create")]
+
         public async Task<IActionResult> SendQuotationToAllSupplier(int rfqId)
         {
             var result = await _rfq.SendQuotationToAllSupplier(rfqId);
@@ -40,6 +45,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("send-quotation-to-specific-supplier")]
+        [HasPermission("rfq", "create")]
+
         public async Task<IActionResult> SendQuotationToSpecificSupplier([FromBody] List<int> supplierId, int rfqId)
         {
             var result = await _rfq.SendQuotationToSpecificSupplier(supplierId, rfqId);
@@ -51,6 +58,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-rfqs")]
+        [HasPermission("rfq", "read")]
+
         public async Task<IActionResult> GetAllRfqs()
         {
             var result = await _rfq.GetAllRfqs();
@@ -66,6 +75,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("update-rfq")]
+        [HasPermission("rfq", "update")]
+
         public async Task<IActionResult> UpdateRfq(int rfqId, [FromForm] RfqDto rfqDto)
         {
             var result = await _rfq.UpdateRfq(rfqId, rfqDto);
@@ -77,6 +88,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpDelete("delete-rfq")]
+        [HasPermission("rfq", "delete")]
+
         public async Task<IActionResult> DeleteRfq(int rfqId)
         {
             var result = await _rfq.DeleteRfq(rfqId);

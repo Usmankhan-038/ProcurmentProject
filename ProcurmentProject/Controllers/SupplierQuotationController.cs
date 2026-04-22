@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProcurmentProject.Dto;
+using ProcurmentProject.Filters;
 using ProcurmentProject.Interfaces;
 
 namespace ProcurmentProject.Controllers
@@ -17,6 +18,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("add-supplier-quotation")]
+        [HasPermission("supplier_quotation", "create")]
+
         public async Task<IActionResult> AddSupplierQuotation(int supplierId, int productId, int rfqId, [FromBody] SupplierQuotationDto supplierQuotationDto)
         {
             var result = await _supplierQuotation.AddSupplierQuotation(supplierId, productId, rfqId, supplierQuotationDto);
@@ -28,6 +31,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-supplier-quotation")]
+        [HasPermission("supplier_quotation", "read")]
+
         public async Task<IActionResult> GetSupplierQuotation()
         {
             var result = await _supplierQuotation.GetSupplierQuotation();
@@ -43,6 +48,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-supplier-quotation-by-id")]
+        [HasPermission("supplier_quotation", "read")]
+
         public async Task<IActionResult> GetSupplierQuotationById(int quotationId)
         {
             var result = await _supplierQuotation.GetSupplierQuotation(quotationId);
@@ -58,6 +65,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-supplier-quotation-by-product-id")]
+        [HasPermission("supplier_quotation", "read")]
+
         public async Task<IActionResult> GetSupplierQuotationByProductId(int productId)
         {
             var result = await _supplierQuotation.GetSupplierQuotationByProductId(productId);
@@ -73,6 +82,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("update-supplier-quotation")]
+        [HasPermission("supplier_quotation", "update")]
+
         public async Task<IActionResult> UpdateSupplierQuotation(int quotationId, [FromBody] SupplierQuotationDto supplierQuotationDto)
         {
             var result = await _supplierQuotation.UpdateSupplierQuotation(quotationId, supplierQuotationDto);
@@ -84,6 +95,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpDelete("delete-supplier-quotation")]
+        [HasPermission("supplier_quotation", "delete")]
+
         public async Task<IActionResult> DeleteSupplierQuotation(int quotationId)
         {
             var result = await _supplierQuotation.DeleteSupplierQuotation(quotationId);

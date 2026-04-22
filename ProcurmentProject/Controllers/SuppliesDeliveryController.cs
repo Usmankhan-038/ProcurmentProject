@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProcurmentProject.Dto;
+using ProcurmentProject.Filters;
 using ProcurmentProject.Interfaces;
 
 namespace ProcurmentProject.Controllers
@@ -17,6 +18,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("add-supplies-delivery")]
+        [HasPermission("supplier_delivery", "create")]
+
         public async Task<IActionResult> AddSuppliesDelivery(int rfqId, int supplierId, [FromForm] SupplierDeliveryDto supplierDeliveryDto, IFormFile? attachment)
         {
             var result = await _suppliesDelivery.AddSuppliesDelivery(rfqId, supplierId, supplierDeliveryDto, attachment);
@@ -28,6 +31,8 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-supplies-delivery")]
+        [HasPermission("supplier_delivery", "read")]
+
         public async Task<IActionResult> GetSuppliesDelivery()
         {
             var result = await _suppliesDelivery.GetSuppliesDelivery();
@@ -43,6 +48,7 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpGet("get-supplies-delivery-by-id")]
+        [HasPermission("supplier_delivery", "read")]
         public async Task<IActionResult> GetSuppliesDeliveryById(int suppliesDeliveryId)
         {
             var result = await _suppliesDelivery.GetSuppliesDelivery(suppliesDeliveryId);
@@ -58,6 +64,7 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpPost("update-supplies-delivery")]
+        [HasPermission("supplier_delivery", "update")]
         public async Task<IActionResult> UpdateSuppliesDelivery(int suppliesDeliveryId, [FromForm] SupplierDeliveryDto supplierDeliveryDto, IFormFile? attachment)
         {
             var result = await _suppliesDelivery.UpdateSuppliesDelivery(suppliesDeliveryId, supplierDeliveryDto, attachment);
@@ -69,6 +76,7 @@ namespace ProcurmentProject.Controllers
         }
 
         [HttpDelete("delete-supplies-delivery")]
+        [HasPermission("supplier_delivery", "delete")]
         public async Task<IActionResult> DeleteSuppliesDelivery(int suppliesDeliveryId)
         {
             var result = await _suppliesDelivery.DeleteSuppliesDelivery(suppliesDeliveryId);
