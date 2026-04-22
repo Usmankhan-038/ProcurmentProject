@@ -15,7 +15,7 @@ namespace ProcurmentProject.Repositories
             _context = context;
         }
 
-        public async Task<(bool success, string message)> AddSuppliesDelivery(int rfqId, int supplierId, SupplierDeliveryDto supplierDeliveryDto, IFormFile? attachment)
+        public async Task<(bool success, string message)> AddSuppliesDelivery(int rfqId, int supplierId, SupplierDeliveryDto supplierDeliveryDto)
         {
             if (supplierDeliveryDto == null)
             {
@@ -55,9 +55,9 @@ namespace ProcurmentProject.Repositories
             _context.SuppliesDeliveries.Add(suppliesDelivery);
             await _context.SaveChangesAsync();
 
-            if (attachment != null)
+            if (supplierDeliveryDto.Attachment != null)
             {
-                var document = await UploadDeliveryDocument(suppliesDelivery.Id, attachment);
+                var document = await UploadDeliveryDocument(suppliesDelivery.Id, supplierDeliveryDto.Attachment);
                 _context.Documents.Add(document);
                 await _context.SaveChangesAsync();
             }
@@ -103,7 +103,7 @@ namespace ProcurmentProject.Repositories
             return (true, "Supplies Delivery Fetch Successfully", suppliesDelivery);
         }
 
-        public async Task<(bool success, string message)> UpdateSuppliesDelivery(int suppliesDeliveryId, SupplierDeliveryDto supplierDeliveryDto, IFormFile? attachment)
+        public async Task<(bool success, string message)> UpdateSuppliesDelivery(int suppliesDeliveryId, SupplierDeliveryDto supplierDeliveryDto)
         {
             if (supplierDeliveryDto == null)
             {
@@ -131,7 +131,7 @@ namespace ProcurmentProject.Repositories
             _context.SuppliesDeliveries.Update(suppliesDelivery);
             await _context.SaveChangesAsync();
 
-            if (attachment != null)
+            if (supplierDeliveryDto.Attachment != null)
             {
                 var documents = await _context.Documents
                     .Where(d => d.Deleted == 0 && d.BelongName == "supplier_delivery" && d.BelongId == suppliesDeliveryId)
@@ -144,7 +144,7 @@ namespace ProcurmentProject.Repositories
 
                 await _context.SaveChangesAsync();
 
-                var newDocument = await UploadDeliveryDocument(suppliesDeliveryId, attachment);
+                var newDocument = await UploadDeliveryDocument(suppliesDeliveryId, supplierDeliveryDto.Attachment);
                 _context.Documents.Add(newDocument);
                 await _context.SaveChangesAsync();
             }
@@ -185,7 +185,7 @@ namespace ProcurmentProject.Repositories
 
             var originalFileName = Path.GetFileName(attachment.FileName);
             var extension = Path.GetExtension(attachment.FileName);
-            var encodedFileName = Guid.NewGuid().ToString() + DateTime.Now.ToString("yyyyMMddHHmmssfff") + extension;
+            var encodedFileName = Guid.NewGuid().ToString() + extension;
             string fullPath = Path.Combine(folderPath, encodedFileName);
 
             using (var stream = new FileStream(fullPath, FileMode.Create))
@@ -199,9 +199,7 @@ namespace ProcurmentProject.Repositories
                 BelongName = "supplier_delivery",
                 EncodedFileName = encodedFileName,
                 OriginalFileName = originalFileName,
-                Url = folderPath,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                Url = folderPath
             };
 
             return document;

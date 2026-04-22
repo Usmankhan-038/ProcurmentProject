@@ -20,9 +20,9 @@ namespace ProcurmentProject.Controllers
         [HttpPost("add-supplies-delivery")]
         [HasPermission("supplier_delivery", "create")]
 
-        public async Task<IActionResult> AddSuppliesDelivery(int rfqId, int supplierId, [FromForm] SupplierDeliveryDto supplierDeliveryDto, IFormFile? attachment)
+        public async Task<IActionResult> AddSuppliesDelivery(int rfqId, int supplierId, [FromForm] SupplierDeliveryDto supplierDeliveryDto)
         {
-            var result = await _suppliesDelivery.AddSuppliesDelivery(rfqId, supplierId, supplierDeliveryDto, attachment);
+            var result = await _suppliesDelivery.AddSuppliesDelivery(rfqId, supplierId, supplierDeliveryDto);
             if (!result.success)
             {
                 return BadRequest(result.message);
@@ -65,9 +65,9 @@ namespace ProcurmentProject.Controllers
 
         [HttpPost("update-supplies-delivery")]
         [HasPermission("supplier_delivery", "update")]
-        public async Task<IActionResult> UpdateSuppliesDelivery(int suppliesDeliveryId, [FromForm] SupplierDeliveryDto supplierDeliveryDto, IFormFile? attachment)
+        public async Task<IActionResult> UpdateSuppliesDelivery(int suppliesDeliveryId, [FromForm] SupplierDeliveryDto supplierDeliveryDto)
         {
-            var result = await _suppliesDelivery.UpdateSuppliesDelivery(suppliesDeliveryId, supplierDeliveryDto, attachment);
+            var result = await _suppliesDelivery.UpdateSuppliesDelivery(suppliesDeliveryId, supplierDeliveryDto);
             if (!result.success)
             {
                 return BadRequest(result.message);
