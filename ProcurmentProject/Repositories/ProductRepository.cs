@@ -13,11 +13,15 @@ namespace ProcurmentProject.Repositories
         {
             _context = context;
         }
-        public async Task<(bool success, string message, int? productId)> AddProduct(ProductDto prodDto)
+        public async Task<ResponseModel> AddProduct(ProductDto prodDto)
         {
             if(prodDto == null)
             {
-                return (false, "Please Enter Valid Data", null);
+                return new ResponseModel 
+                { 
+                    Success = false, 
+                    Message = "Please Enter Valid Data" 
+                };
             }
             var product = new Product
             {
@@ -31,32 +35,57 @@ namespace ProcurmentProject.Repositories
             };
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
-            return (true, "Product Add successfully", product.Id);
+            return new ResponseModel 
+            { 
+                Success = true, 
+                Message = "Product Add successfully", 
+                Id = product.Id 
+            };
         }
-        public async Task<(bool success, string message, Product? product)> GetProductById(int productId)
+        public async Task<ResponseModel> GetProductById(int productId)
         {
             var product = _context.Products.Where(x => x.Deleted == 0).FirstOrDefault();
             if(product == null)
             {
-                return (false, "Please Enter Correct Id", null);
+                return new ResponseModel 
+                { 
+                    Success = false, 
+                    Message = "Please Enter Correct Id" 
+                };
             }
-            return (true, "Product Fetch Successfully", product);
+            return new ResponseModel 
+            { 
+                Success = true, 
+                Message = "Product Fetch Successfully", 
+                Data = product };
         }
-        public (bool success, string message, Object? product) GetAllProduct()
+        public ResponseModel GetAllProduct()
         {
             var product = _context.Products.Where(x => x.Deleted == 0).ToList();
             if (product != null)
-            {
-                return (false, "No Product Found", null);
+            { 
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "No Product Found"
+                };
             }
-            return (true,"Product Fetch Successfully",  product);
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "Product Fetch Successfully",
+                Data = product
+            };
         }
-        public async Task<(bool success, string message)> UpdateProduct(int productId,ProductDto product)
+        public async Task<ResponseModel> UpdateProduct(int productId,ProductDto product)
         {
             var result = _context.Products.Where(x=>x.Deleted==0 && x.Id == productId).FirstOrDefault();
             if (result == null)
             {
-                return (false, "No Product Found with this Id");
+                return new ResponseModel { 
+                    Success = false, 
+                    Message = "No Product Found with this Id" 
+                };
             }
             result.Name = product.Name;
             result.Company = product.Company;
@@ -66,25 +95,39 @@ namespace ProcurmentProject.Repositories
 
             _context.Products.Update(result);
             await _context.SaveChangesAsync();
-            return (true, "Product Successfully");
+            return new ResponseModel { Success = true, Message = "Product Successfully" };
         }
-        public async Task<(bool success, string message)> DeleteProduct(int productId)
+        public async Task<ResponseModel> DeleteProduct(int productId)
         {
             var result = _context.Products.Find(productId);
             if (result == null)
-            {
-                return (false, "No Product Found with this id");
+            { 
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "No Product Found with this id"
+                };
             }
             result.Deleted = 1;
             _context.Products.Update(result);
             await _context.SaveChangesAsync();
-            return (true, "Product Deleted Successflly");
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "Product Deleted Successflly"
+            };
+           
         }
-        public async Task<(bool success, string message)> AddPrProduct(int productId, int prId)
+        public async Task<ResponseModel> AddPrProduct(int productId, int prId)
         {
             if(prId == 0 || productId == 0)
             {
-                return (true, "Please Provide The correct ids");
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "Please Provide The correct ids"
+                };
+               
             }
             var prProduct = new PrProduct
             {
@@ -95,7 +138,11 @@ namespace ProcurmentProject.Repositories
             };
             _context.PrProducts.Add(prProduct);
             await _context.SaveChangesAsync();
-            return (true, "Product Linked With Pr Product Successfully");
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "Product Linked With Pr Product Successfully"
+            };
         }
     }
 }

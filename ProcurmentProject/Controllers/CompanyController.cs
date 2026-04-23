@@ -24,7 +24,7 @@ namespace ProcurmentProject.Controllers
             _permissionChecker = permissionChecker;
         }
         [Authorize]
-        [HttpPost("add-Company")]
+        [HttpPost("add-company")]
         public async Task<ActionResult> AddCompany(CompanyDto company)
         { 
             
@@ -32,18 +32,18 @@ namespace ProcurmentProject.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var companyAdded = await _company.addCompany(company);
-            if(!companyAdded.success)
+            var companyAdded = await _company.AddCompany(company);
+            if(!companyAdded.Success)
             {
-                return BadRequest(companyAdded.message);
+                return BadRequest(companyAdded.Message);
             }
-            return Ok(companyAdded.message);
+            return Ok(companyAdded);
         }
         [Authorize]
-        [HttpGet("get-companies")]
+        [HttpGet("companies")]
         public async Task<ActionResult> GetAllCompany()
         { 
-            var companyList = await _company.getAllCompany();
+            var companyList = await _company.GetAllCompany();
             return Ok(companyList);
         }
 

@@ -5,11 +5,11 @@ namespace ProcurmentProject.Interfaces
 {
     public interface IProduct
     {
-        public Task<(bool success, string message,int? productId)> AddProduct(ProductDto prodDto);
-        public Task<(bool success,string message, Product? product)> GetProductById(int productId);
-        public (bool success, string message, Object? product) GetAllProduct();
-        public Task<(bool success,string message)> UpdateProduct(int productId, ProductDto product);
-        public Task<(bool success, string message)> DeleteProduct(int productId);
-        public Task<(bool success, string message)> AddPrProduct(int productId, int prId);
+        public Task<ResponseModel> AddProduct(ProductDto prodDto);
+        public Task<ResponseModel> GetProductById(int productId);
+        public ResponseModel GetAllProduct();
+        public Task<ResponseModel> UpdateProduct(int productId, ProductDto product);
+        public Task<ResponseModel> DeleteProduct(int productId);
+        public Task<ResponseModel> AddPrProduct(int productId, int prId);
     }
 }

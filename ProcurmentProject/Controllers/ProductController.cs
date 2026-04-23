@@ -27,11 +27,11 @@ namespace ProcurmentProject.Controllers
                 return BadRequest("Please Enter Product Data"); 
             }
             var result = await _prod.AddProduct(product);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(result.message);
+            return Ok(result);
         }
 
         [HttpGet("get-product")]
@@ -40,12 +40,12 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetProduct()
         {
             var result =  _prod.GetAllProduct();
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message.ToString());
+                return BadRequest(result.Message.ToString());
             }
 
-            return Ok(result.message);
+            return Ok(result);
         }
 
         [HttpGet("get-product-by-Id")]
@@ -53,13 +53,13 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> GetProductById([FromQuery] int Id)
         {
-            var result = await _prod.getProductById(Id);
-            if (!result.success)
+            var result = await _prod.GetProductById(Id);
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
 
-            return Ok(result.message);
+            return Ok(result);
         }
 
         [HttpPost("update-product")]
@@ -68,12 +68,12 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> UpdateProduct(int prodId,ProductDto prod)
         {
             var result = await _prod.UpdateProduct(prodId,prod);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
 
-            return Ok(result.message);
+            return Ok(result);
         }
 
         [HttpDelete("delete-product")]
@@ -82,12 +82,12 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> DeleteProduct(int prodId)
         {
             var result = await _prod.DeleteProduct(prodId);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
 
-            return Ok(result.message);
+            return Ok(result);
         }
 
     }

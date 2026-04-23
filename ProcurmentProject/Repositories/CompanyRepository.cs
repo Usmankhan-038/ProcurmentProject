@@ -14,11 +14,14 @@ namespace ProcurmentProject.Repositories
             _context = context;
         }
 
-        public async Task<(bool success,string message)> AddCompany(CompanyDto company)
+        public async Task<ResponseModel> AddCompany(CompanyDto company)
         {
             if (company == null)
             {
-                return (false, "Please Enter the detail correctly");
+                return new ResponseModel {
+                    Success =  false, 
+                    Message = "Please Enter the detail correctly" 
+                };
             }
 
             var newCompany = new Company
@@ -33,7 +36,10 @@ namespace ProcurmentProject.Repositories
             _context.Companies.Add(newCompany);
             await _context.SaveChangesAsync();
 
-            return (true, "Company Add Successfully");
+            return new ResponseModel { 
+                Success = true, 
+                Message = "Company Add Successfully" 
+            };
         }
         public async Task<List<Object>> GetAllCompany()
         {
