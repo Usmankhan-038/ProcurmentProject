@@ -40,14 +40,14 @@ namespace ProcurmentProject.Controllers
             {
                 return BadRequest(result.message);
             }
-            return Ok(new
+            return Ok(new 
             {
                 message = result.message,
                 supplierQuotation = result.supplierQuotation
             });
         }
 
-        [HttpGet("get-supplier-quotation-by-id")]
+        [HttpGet("supplier-quotation")]
         [HasPermission("supplier_quotation", "read")]
 
         public async Task<IActionResult> GetSupplierQuotationById(int quotationId)

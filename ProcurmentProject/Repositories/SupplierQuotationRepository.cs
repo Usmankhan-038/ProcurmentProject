@@ -40,9 +40,9 @@ namespace ProcurmentProject.Repositories
                 SupplierId = supplierId,
                 ProductId = productId,
                 RfqId = rfqId,
-                UnitPrice = supplierQuotationDto.unitPrice.ToString(),
-                Quantity = supplierQuotationDto.supplierQuantity,
-                FinalPrice = supplierQuotationDto.finalPrice.ToString(),
+                UnitPrice = supplierQuotationDto.UnitPrice.ToString(),
+                Quantity = supplierQuotationDto.SupplierQuantity,
+                FinalPrice = supplierQuotationDto.FinalPrice.ToString(),
             };
 
             _context.SupplierQuotations.Add(quotation);
@@ -176,9 +176,9 @@ namespace ProcurmentProject.Repositories
                 return (false, "No Supplier Quotation Found");
             }
 
-            quotation.UnitPrice = supplierQuotationDto.unitPrice.ToString();
-            quotation.Quantity = supplierQuotationDto.supplierQuantity;
-            quotation.FinalPrice = supplierQuotationDto.finalPrice.ToString();
+            quotation.UnitPrice = supplierQuotationDto.UnitPrice.ToString();
+            quotation.Quantity = supplierQuotationDto.SupplierQuantity;
+            quotation.FinalPrice = supplierQuotationDto.FinalPrice.ToString();
             quotation.UpdatedAt = DateTime.UtcNow;
 
             _context.SupplierQuotations.Update(quotation);

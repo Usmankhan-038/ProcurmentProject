@@ -31,10 +31,10 @@ namespace ProcurmentProject.Controllers
         {
             string userId =  User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var prResult = await _pr.CreatePrRequest(Int32.Parse(userId),pr.prRequest);
+            var prResult = await _pr.CreatePrRequest(Int32.Parse(userId),pr.PrRequest);
             if(prResult.success)
             {
-                foreach (var prod in pr.products)
+                foreach (var prod in pr.Products)
                 {
                     var productResult = await _product.AddProduct(prod);
                     if(productResult.success)

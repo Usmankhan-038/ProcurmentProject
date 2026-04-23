@@ -2,8 +2,8 @@
 {
     public class SupplierQuotationDto
     {
-        public int unitPrice { get; set; }
-        public int supplierQuantity { get; set; }
-        public int finalPrice { get; set; }
+        public int UnitPrice { get; set; }
+        public int SupplierQuantity { get; set; }
+        public int FinalPrice { get; set; }
     }
 }

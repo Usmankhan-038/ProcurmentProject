@@ -22,9 +22,9 @@ namespace ProcurmentProject.Repositories
             var product = new Product
             {
                 Name = prodDto.Name,
-                Company = prodDto.company,
-                Description = prodDto.description,
-                Upc = prodDto.upc,
+                Company = prodDto.Company,
+                Description = prodDto.Description,
+                Upc = prodDto.Upc,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
 
@@ -33,7 +33,7 @@ namespace ProcurmentProject.Repositories
             await _context.SaveChangesAsync();
             return (true, "Product Add successfully", product.Id);
         }
-        public async Task<(bool success, string message, Product? product)> getProductById(int productId)
+        public async Task<(bool success, string message, Product? product)> GetProductById(int productId)
         {
             var product = _context.Products.Where(x => x.Deleted == 0).FirstOrDefault();
             if(product == null)
@@ -59,9 +59,9 @@ namespace ProcurmentProject.Repositories
                 return (false, "No Product Found with this Id");
             }
             result.Name = product.Name;
-            result.Company = product.company;
-            result.Description = product.description;
-            result.Upc = product.upc;   
+            result.Company = product.Company;
+            result.Description = product.Description;
+            result.Upc = product.Upc;   
             result.UpdatedAt= DateTime.UtcNow;
 
             _context.Products.Update(result);

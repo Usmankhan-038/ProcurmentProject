@@ -6,8 +6,8 @@ namespace ProcurmentProject.Dto
     {
         [Required]
         public string Name { get; set; } = default!;
-        public string? company { get; set; } = default!;
-        public string? description { get; set; } = default!;
-        public string? upc { get; set; } = default!;
+        public string? Company { get; set; } = default!;
+        public string? Description { get; set; } = default!;
+        public string? Upc { get; set; } = default!;
     }
 }

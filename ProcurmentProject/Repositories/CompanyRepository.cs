@@ -14,7 +14,7 @@ namespace ProcurmentProject.Repositories
             _context = context;
         }
 
-        public async Task<(bool success,string message)> addCompany(CompanyDto company)
+        public async Task<(bool success,string message)> AddCompany(CompanyDto company)
         {
             if (company == null)
             {
@@ -35,7 +35,7 @@ namespace ProcurmentProject.Repositories
 
             return (true, "Company Add Successfully");
         }
-        public async Task<List<Object>> getAllCompany()
+        public async Task<List<Object>> GetAllCompany()
         {
             var companies = await _context.Companies.Where(company => company.Deleted == 0).Select(company => new { company.Id, company.Name}).ToListAsync();
 

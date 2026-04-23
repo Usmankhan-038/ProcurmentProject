@@ -31,24 +31,24 @@ namespace ProcurmentProject.Repositories
                 if (signup == null)
                 {
                     return (false, "The Data is incomplete. Please Enter Complete Data");
-                } else if (signup.password != signup.confirmpassword)
+                } else if (signup.Password != signup.Confirmpassword)
                 {
                     return (false, "Password and confirm password must be same");
                 }
 
-                signup.password = BCrypt.Net.BCrypt.HashPassword(signup.password);
+                signup.Password = BCrypt.Net.BCrypt.HashPassword(signup.Password);
 
-                bool isEmailExist = _context.Users.Any(user => user.Email == signup.email);
+                bool isEmailExist = _context.Users.Any(user => user.Email == signup.Email);
                 if (isEmailExist)
                 {
                     return (false, "This email is already exist,use another email please");
                 }
                 var user = new User
                 {
-                    Name = signup.name,
-                    Email = signup.email,
-                    Phone = signup.phone,
-                    Password = signup.password,
+                    Name = signup.Name,
+                    Email = signup.Email,
+                    Phone = signup.Phone,
+                    Password = signup.Password,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
@@ -79,12 +79,12 @@ namespace ProcurmentProject.Repositories
             } catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return (false, $"Something went Wrong, {ex.Message}");
+                return (false, "Something went Wrong");
             }
         }
         public async Task<(bool success,string? token, string message)> Login(string userEmail, string password)
         {
-            if(userEmail == null || password == null)
+            if(userEmail == null && password == null)
             {
                 return (false,null,"Please Email and Password");
             }

@@ -16,15 +16,15 @@ namespace ProcurmentProject.Repositories
 
         public async Task<(bool success, string message)> AddAccessRole(RoleDto role)
         {
-            if(role.roleName == null || role.permission == null)
+            if(role.RoleName == null || role.Permission == null)
             {
                 return (false, "Both the field are required");
             }
 
             var accessRole = new Role
             {
-                Name = role.roleName,
-                Permission = role.permission,
+                Name = role.RoleName,
+                Permission = role.Permission,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             };
@@ -96,8 +96,8 @@ namespace ProcurmentProject.Repositories
                 return (false, "the id is invalid");
             }
             accessRole.UpdatedAt = DateTime.Now;
-            accessRole.Name = role.roleName;
-            accessRole.Permission = role.permission;
+            accessRole.Name = role.RoleName;
+            accessRole.Permission = role.Permission;
 
             await _context.SaveChangesAsync();
             return (true, "Data Updated Successfully");

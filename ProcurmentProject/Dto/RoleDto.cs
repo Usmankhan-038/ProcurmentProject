@@ -2,7 +2,7 @@
 {
     public class RoleDto 
     {
-        public string roleName { get; set; } = default!;
-        public string permission { get; set; } = default!;
+        public string RoleName { get; set; } = default!;
+        public string Permission { get; set; } = default!;
     }
 }

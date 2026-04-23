@@ -21,10 +21,10 @@ namespace ProcurmentProject.Repositories
             }
             var newUser = new User
             {
-                Name = supplier.userData.name,
-                Email = supplier.userData.email,
-                Phone = supplier.userData.phone,
-                Password = BCrypt.Net.BCrypt.HashPassword(supplier.userData.password),
+                Name = supplier.UserData.Name,
+                Email = supplier.UserData.Email,
+                Phone = supplier.UserData.Phone,
+                Password = BCrypt.Net.BCrypt.HashPassword(supplier.UserData.Password),
 
             };
             _context.Users.Add(newUser);
@@ -55,10 +55,10 @@ namespace ProcurmentProject.Repositories
                 return (false, "Please Provide Correct data");
             }
 
-            supplierUser.Name = supplierDto.userData.name;
-            supplierUser.Email = supplierDto.userData.email;
-            supplierUser.Phone = supplierDto.userData.phone;
-            supplierUser.Password = BCrypt.Net.BCrypt.HashPassword(supplierDto.userData.password);
+            supplierUser.Name = supplierDto.UserData.Name;
+            supplierUser.Email = supplierDto.UserData.Email;
+            supplierUser.Phone = supplierDto.UserData.Phone;
+            supplierUser.Password = BCrypt.Net.BCrypt.HashPassword(supplierDto.UserData.Password);
 
 
             supplier.CompanyName = supplierDto.CompanyName;
@@ -69,13 +69,16 @@ namespace ProcurmentProject.Repositories
         
         public async Task<(bool success, string message)> DeleteSupplier(int supplierId)
         {
-            var supplier = _context.Suppliers.Where(s => s.Deleted == 0 && s.Id == supplierId).FirstOrDefault();
-            var supplierUser = _context.Users.Where(s => s.Deleted == 0 && s.Id == supplier.UserId).FirstOrDefault();
+            var supplier =  _context.Suppliers.Where(s => s.Deleted == 0 && s.Id == supplierId).FirstOrDefault();
+            
             if (supplier == null)
             {
                 return (false, "Please Enter Correct Id");
             }
-            else if (supplierUser == null)
+
+            var supplierUser = _context.Users.Where(s => s.Deleted == 0 && s.Id == supplier!.UserId).FirstOrDefault();
+            
+            if (supplierUser == null)
             {
                 return (false, "Something wents wrong");
             }

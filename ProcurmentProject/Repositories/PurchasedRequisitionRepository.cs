@@ -22,11 +22,11 @@ namespace ProcurmentProject.Repositories
             }
             var request = new PurchasedRequisition
             {
-               Quantity = prRequest.quantity,
-               EstimatedBudget = prRequest.estimated_budget,
-               Title = prRequest.title,
-               DeliveryDate = prRequest.deliveryDate,
-               Note = prRequest.note,
+               Quantity = prRequest.Quantity,
+               EstimatedBudget = prRequest.Estimated_budget,
+               Title = prRequest.Title,
+               DeliveryDate = prRequest.DeliveryDate,
+               Note = prRequest.Note,
                CreatedAt = DateTime.UtcNow,
                UpdatedAt = DateTime.UtcNow,
                UserId = userId
@@ -49,11 +49,11 @@ namespace ProcurmentProject.Repositories
             {
                 return (false, "Invalid Id", null);
             }
-            request.Quantity = prRequest.quantity;
-            request.EstimatedBudget = prRequest.estimated_budget;
-            request.Title = prRequest.title;
-            request.DeliveryDate = prRequest.deliveryDate;
-            request.Note = prRequest.note;
+            request.Quantity = prRequest.Quantity;
+            request.EstimatedBudget = prRequest.Estimated_budget;
+            request.Title = prRequest.Title;
+            request.DeliveryDate = prRequest.DeliveryDate;
+            request.Note = prRequest.Note;
             request.UpdatedAt = DateTime.UtcNow;
            
 
