@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
 using System.Security.Claims;
+using Microsoft.Extensions.Caching.Memory;
 
 
 namespace ProcurmentProject.Filters
@@ -13,29 +14,45 @@ namespace ProcurmentProject.Filters
         private string _action;
         private readonly IRole _role;
         private readonly PermissionChecker _permissionChecker;
-
-        public PermissionFilter(string module, string action,IRole role, PermissionChecker permissionChecker)
+        private readonly IMemoryCache _cache;
+        public PermissionFilter(string module, string action,IRole role, PermissionChecker permissionChecker, IMemoryCache cache)
         {
             _module = module;
             _action = action;
             _role = role;
             _permissionChecker = permissionChecker;
+            _cache = cache;
         }
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
             var user = context.HttpContext.User;
             var claimUserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(claimUserId) || !int.TryParse(claimUserId, out int userId))
+           
+            if (claimUserId == null)
             {
                 context.Result = new ForbidResult();
                 return;
             }
+            var userId = int.Parse(claimUserId!);
+            string cacheKey = $"perm_{userId}";
+            if (!_cache.TryGetValue(cacheKey, out string? permissionJson))
+            {
 
-            var rolePermission = await _role.GetPermissionByUserId(userId);
+                var rolePermission = await _role.GetPermissionByUserId(userId);
+                if (!rolePermission.success || rolePermission.permission == null)
+                {
+                    context.Result = new JsonResult(new { message = "Unauthorized Access" }) { StatusCode = 403 };
+                    return;
+                }
 
-            if(!rolePermission.success  || rolePermission.permission == null || !_permissionChecker.HasPermission(rolePermission.permission,_module,_action))
+                permissionJson = rolePermission.permission;
+
+                _cache.Set(cacheKey, permissionJson, TimeSpan.FromHours(1));
+            }
+
+
+            if(!_permissionChecker.HasPermission(permissionJson!, _module, _action))
             {
                 context.Result = new JsonResult(new { message = "Unauthorized Access" });
             }

@@ -88,19 +88,27 @@ namespace ProcurmentProject.Repositories
             
 
         }
-        public async Task<(bool success, string message)> UpdateRole(int id, RoleDto role)
+        public async Task<ResponseModel> UpdateRole(int id, RoleDto role)
         {
             var accessRole = await _context.Roles.FindAsync(id);
             if (accessRole == null)
             {
-                return (false, "the id is invalid");
+                return new ResponseModel { 
+                    Success = false, 
+                    Message = "the id is invalid" 
+                };
             }
             accessRole.UpdatedAt = DateTime.Now;
             accessRole.Name = role.RoleName;
             accessRole.Permission = role.Permission;
 
             await _context.SaveChangesAsync();
-            return (true, "Data Updated Successfully");
+            return new ResponseModel
+            {
+               Success =  true, 
+                Message = "Data Updated Successfully",
+                
+            };
         }
 
         public async Task<(bool success,string message, string? permission)> GetPermissionByUserId(int userId)

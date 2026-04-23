@@ -11,7 +11,7 @@ namespace ProcurmentProject.Interfaces
         public Task<(bool success, string message, Role? role)> GetRole(int roleId);
         public Task<Object> GetAllUserRole();
         public Task<(bool success, string message)> DeleteRole(int roleId);
-        public Task<(bool success, string message)> UpdateRole(int id,RoleDto role);
+        public Task<ResponseModel> UpdateRole(int id,RoleDto role);
         public Task<(bool success, string message, string? permission)> GetPermissionByUserId(int userId);
 
     }

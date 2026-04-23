@@ -3,6 +3,7 @@ using ProcurmentProject.Interfaces;
 using ProcurmentProject.Dto;
 using Microsoft.AspNetCore.Authorization;
 using ProcurmentProject.Filters;
+using Microsoft.Extensions.Caching.Memory;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,9 +15,11 @@ namespace ProcurmentProject.Controllers
     public class AccessRoleController : ControllerBase
     {
         private readonly IRole _role;
-        public AccessRoleController(IRole role)
+        private readonly IMemoryCache _cache;
+        public AccessRoleController(IRole role, IMemoryCache cache)
         {
             _role = role;
+            _cache = cache;
         }
 
         [HttpPost("add-role")]
@@ -62,11 +65,12 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> UpdateRole(int id,[FromForm] RoleDto role)
         {
             var updateRole = await _role.UpdateRole(id,role);
-            if (!updateRole.success)
+            if (!updateRole.Success)
             {
-                return BadRequest(updateRole.message);
+                return BadRequest(updateRole.Message);
             }
-            return Ok(updateRole.message);
+            _cache.Remove($"perm_{id}");
+            return Ok(updateRole);
         }
     }
 }
