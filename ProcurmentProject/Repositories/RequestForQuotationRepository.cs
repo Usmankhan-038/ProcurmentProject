@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
+using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
+using System.Reflection.Metadata;
+using System.Xml.Linq;
 
 namespace ProcurmentProject.Repositories
 {
@@ -11,11 +14,13 @@ namespace ProcurmentProject.Repositories
         private readonly ProcurmentSystemContext _context;
         private readonly IEmailService _email;
         private readonly IConfiguration _config;
-        public RequestForQuotationRepository(ProcurmentSystemContext context, IEmailService email, IConfiguration config)
+        private readonly DocumentUploader _documentUploader;
+        public RequestForQuotationRepository(ProcurmentSystemContext context, IEmailService email, IConfiguration config, DocumentUploader documentUploader)
         {
             _context = context;
             _email = email;
             _config = config;
+            _documentUploader = documentUploader;
         }
         public async Task<(bool success, string message)> CreateRfq(int PrId, RfqDto rfqDto)
         {
@@ -34,33 +39,10 @@ namespace ProcurmentProject.Repositories
             if (rfqDto.Attachment != null)
             {
 
-                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "upload", "rfqs");
-                if (!Directory.Exists(folderPath))
-                {
-                    Directory.CreateDirectory(folderPath);
-                }
-                var OrignalFileName = Path.GetFileName(rfqDto.Attachment.FileName);
-                var extension = Path.GetExtension(rfqDto.Attachment.FileName);
-                var encodedFileName = Guid.NewGuid().ToString() + extension;
+                var document = await _documentUploader.UploadDocument(newRfq.Id, "rfq", rfqDto.Attachment);
 
-                string fullPath = Path.Combine(folderPath, encodedFileName);
-
-                using (var stream = new FileStream(fullPath,FileMode.Create))
-                {
-                    await rfqDto.Attachment.CopyToAsync(stream);
-                }
-
-                var newDocument = new Document
-                {
-                    BelongId = newRfq.Id,
-                    BelongName = "rfq",
-                    EncodedFileName = encodedFileName,
-                    OriginalFileName = OrignalFileName,
-                    Url = folderPath
-                };
-                _context.Documents.Add(newDocument);
+                _context.Documents.Add(document);
                 await _context.SaveChangesAsync();
-
             }
 
             return (true, "RFQ Created Successful");
@@ -275,7 +257,7 @@ namespace ProcurmentProject.Repositories
                     await rfqDto.Attachment.CopyToAsync(stream);
                 }
 
-                var newDocument = new Document
+                var newDocument = new Models.Document
                 {
 
                     BelongName = "rfq",

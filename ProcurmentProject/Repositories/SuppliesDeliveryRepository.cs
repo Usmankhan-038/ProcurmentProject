@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
+using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
 
@@ -10,9 +11,11 @@ namespace ProcurmentProject.Repositories
     public class SuppliesDeliveryRepository : ISuppliesDelivery
     {
         private readonly ProcurmentSystemContext _context;
-        public SuppliesDeliveryRepository(ProcurmentSystemContext context)
+        private readonly DocumentUploader _doc;
+        public SuppliesDeliveryRepository(ProcurmentSystemContext context, DocumentUploader doc)
         {
             _context = context;
+            _doc = doc;
         }
 
         public async Task<(bool success, string message)> AddSuppliesDelivery(int rfqId, int supplierId, SupplierDeliveryDto supplierDeliveryDto)
@@ -57,7 +60,8 @@ namespace ProcurmentProject.Repositories
 
             if (supplierDeliveryDto.Attachment != null)
             {
-                var document = await UploadDeliveryDocument(suppliesDelivery.Id, supplierDeliveryDto.Attachment);
+                var belongingName = "supplier_delivery";
+                var document = await _doc.UploadDocument(suppliesDelivery.Id, belongingName,supplierDeliveryDto.Attachment);
                 _context.Documents.Add(document);
                 await _context.SaveChangesAsync();
             }
@@ -143,8 +147,8 @@ namespace ProcurmentProject.Repositories
                 }
 
                 await _context.SaveChangesAsync();
-
-                var newDocument = await UploadDeliveryDocument(suppliesDeliveryId, supplierDeliveryDto.Attachment);
+                var belongingName = "supplier_delivery";
+                var newDocument = await _doc.UploadDocument(suppliesDeliveryId, belongingName, supplierDeliveryDto.Attachment);
                 _context.Documents.Add(newDocument);
                 await _context.SaveChangesAsync();
             }
@@ -175,34 +179,6 @@ namespace ProcurmentProject.Repositories
             return (true, "Supplies Delivery Deleted Successfully");
         }
 
-        private async Task<Document> UploadDeliveryDocument(int suppliesDeliveryId, IFormFile attachment)
-        {
-            string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads", "supplier-deliveries");
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
-            var originalFileName = Path.GetFileName(attachment.FileName);
-            var extension = Path.GetExtension(attachment.FileName);
-            var encodedFileName = Guid.NewGuid().ToString() + extension;
-            string fullPath = Path.Combine(folderPath, encodedFileName);
-
-            using (var stream = new FileStream(fullPath, FileMode.Create))
-            {
-                await attachment.CopyToAsync(stream);
-            }
-
-            var document = new Document
-            {
-                BelongId = suppliesDeliveryId,
-                BelongName = "supplier_delivery",
-                EncodedFileName = encodedFileName,
-                OriginalFileName = originalFileName,
-                Url = folderPath
-            };
-
-            return document;
-        }
+        
     }
 }

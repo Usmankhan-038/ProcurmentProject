@@ -81,6 +81,7 @@ builder.Services.AddScoped<ISuppliesDelivery, SuppliesDeliveryRepository>();
 
 // services Dependency Injection
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<DocumentUploader>();
 
 // stateless class one instance for whole project
 builder.Services.AddSingleton<PermissionChecker>();

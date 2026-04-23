@@ -26,6 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="upload\rfqs\" />
+    <Folder Include="uploads\" />
   </ItemGroup>
 </Project>
