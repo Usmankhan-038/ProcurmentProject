@@ -71,7 +71,7 @@ namespace ProcurmentProject.Repositories
                 query = query.Where(pr => pr.Id == prId.Value);
             }
 
-             var prRequest =await query.Select(pp => new
+             var prRequestNew =await query.Select(pp => new
                 {
                     PrId = pp.Id,
                     Title = pp.Title,
@@ -85,12 +85,12 @@ namespace ProcurmentProject.Repositories
                    .Select(pr => new
                    {
                        productId = pr.ProductId,
-                       productName = pr.Product.Name,
+                       productName = pr.Product!.Name,
                        company = pr.Product.Company
                    }).ToList()
-                }).Distinct()
+                })
                 .ToListAsync();
-
+            var prRequest = prRequestNew.Distinct().ToList();
             if (prRequest.Count == 0)
             {
                 return new ResponseModel { Success = false, Message = "No PR Found" };

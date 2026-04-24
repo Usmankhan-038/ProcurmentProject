@@ -35,6 +35,7 @@ namespace ProcurmentProject.Controllers
             {
                 return BadRequest(accessRole.Message);
             }
+           
             return Ok(accessRole);
         }
 
@@ -60,6 +61,7 @@ namespace ProcurmentProject.Controllers
             {
                 return BadRequest(deletedRole.Message);
             }
+            _cache.Remove($"perm_{id}");
             return Ok(deletedRole);
         }
    
