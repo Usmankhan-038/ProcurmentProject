@@ -32,31 +32,30 @@ namespace ProcurmentProject.Controllers
             string userId =  User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var prResult = await _pr.CreatePrRequest(Int32.Parse(userId),pr.PrRequest);
-            if(prResult.success)
+            if(prResult.Success)
             {
                 foreach (var prod in pr.Products)
                 {
                     var productResult = await _product.AddProduct(prod);
-                    if(productResult.success)
+                    if(productResult.Success)
                     {
-                        var prProduct = await _product.AddPrProduct(productResult.productId.Value, prResult.prId.Value);
-                        if(!prProduct.success)
+                        var prProduct = await _product.AddPrProduct(productResult.Id!.Value, prResult.Id!.Value);
+                        if(!prProduct.Success)
                         {
-                            return BadRequest(prProduct.message);
+                            return BadRequest(prProduct.Message);
                         }
                     }
                     else
                     {
-                        return BadRequest(productResult.message);
+                        return BadRequest(productResult.Message);
                     }
                 }
             } else
             {
-                return BadRequest(prResult.message);
+                return BadRequest(prResult.Message);
             }
 
-
-            return Ok("Pr Created Successfully");
+            return Ok(new ResponseModel { Success = true, Message = "Pr Created Successfully", Id = prResult.Id });
         }
         [HttpPost("update-pr")]
         [HasPermission("pr_module", "update")]
@@ -69,11 +68,11 @@ namespace ProcurmentProject.Controllers
             }
             var result = await _pr.UpdatePrRequest(prId, pr);
 
-            if(!result.success)
+            if(!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(result.message);
+            return Ok(result);
         }
 
         [HttpGet("get-all-pr-request")]
@@ -82,15 +81,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetAllPrRequest()
         {
             var prRequest = await _pr.GetPrRequest();
-            if(!prRequest.success)
+            if(!prRequest.Success)
             {
-                return BadRequest(prRequest.message);
+                return BadRequest(prRequest.Message);
             }
-            return Ok(new
-            {
-                message = prRequest.message,
-                prRequests = prRequest.prRequest
-            });
+            return Ok(prRequest);
         }
 
         [HttpGet("get-pr-request-byId")]
@@ -99,15 +94,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetAllPrRequestById(int prId)
         {
             var prRequest = await _pr.GetPrRequest(prId);
-            if (!prRequest.success)
+            if (!prRequest.Success)
             {
-                return BadRequest(prRequest.message);
+                return BadRequest(prRequest.Message);
             }
-            return Ok(new
-            {
-                message = prRequest.message,
-                prRequests = prRequest.prRequest
-            });
+            return Ok(prRequest);
         }
 
         [HttpDelete("delete-pr-request")]
@@ -116,11 +107,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> DeletePrRequest(int prId)
         {
             var prRequest = await _pr.DeletePrRequest(prId);
-            if (!prRequest.success)
+            if (!prRequest.Success)
             {
-                return BadRequest(prRequest.message);
+                return BadRequest(prRequest.Message);
             }
-            return Ok( prRequest.message );
+            return Ok(prRequest);
         }
 
     }

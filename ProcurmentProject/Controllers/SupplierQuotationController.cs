@@ -23,11 +23,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> AddSupplierQuotation(int supplierId, int productId, int rfqId, [FromBody] SupplierQuotationDto supplierQuotationDto)
         {
             var result = await _supplierQuotation.AddSupplierQuotation(supplierId, productId, rfqId, supplierQuotationDto);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(result.message);
+            return Ok(result);
         }
 
         [HttpGet("get-supplier-quotation")]
@@ -36,15 +36,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetSupplierQuotation()
         {
             var result = await _supplierQuotation.GetSupplierQuotation();
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(new 
-            {
-                message = result.message,
-                supplierQuotation = result.supplierQuotation
-            });
+            return Ok(result);
         }
 
         [HttpGet("supplier-quotation")]
@@ -53,15 +49,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetSupplierQuotationById(int quotationId)
         {
             var result = await _supplierQuotation.GetSupplierQuotation(quotationId);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(new
-            {
-                message = result.message,
-                supplierQuotation = result.supplierQuotation
-            });
+            return Ok(result);
         }
 
         [HttpGet("get-supplier-quotation-by-product-id")]
@@ -70,15 +62,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetSupplierQuotationByProductId(int productId)
         {
             var result = await _supplierQuotation.GetSupplierQuotationByProductId(productId);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(new
-            {
-                message = result.message,
-                supplierQuotation = result.supplierQuotation
-            });
+            return Ok(result);
         }
 
         [HttpPost("update-supplier-quotation")]
@@ -87,11 +75,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> UpdateSupplierQuotation(int quotationId, [FromBody] SupplierQuotationDto supplierQuotationDto)
         {
             var result = await _supplierQuotation.UpdateSupplierQuotation(quotationId, supplierQuotationDto);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(result.message);
+            return Ok(result);
         }
 
         [HttpDelete("delete-supplier-quotation")]
@@ -100,11 +88,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> DeleteSupplierQuotation(int quotationId)
         {
             var result = await _supplierQuotation.DeleteSupplierQuotation(quotationId);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(result.message);
+            return Ok(result);
         }
     }
 }

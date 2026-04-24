@@ -39,7 +39,7 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> GetProduct()
         {
-            var result =  _prod.GetAllProduct();
+            var result =  await _prod.GetAllProduct();
             if (!result.Success)
             {
                 return BadRequest(result.Message.ToString());

@@ -18,29 +18,29 @@ namespace ProcurmentProject.Repositories
             _doc = doc;
         }
 
-        public async Task<(bool success, string message)> AddSuppliesDelivery(int rfqId, int supplierId, SupplierDeliveryDto supplierDeliveryDto)
+        public async Task<ResponseModel> AddSuppliesDelivery(int rfqId, int supplierId, SupplierDeliveryDto supplierDeliveryDto)
         {
             if (supplierDeliveryDto == null)
             {
-                return (false, "Please Provide Valid Data");
+                return new ResponseModel { Success = false, Message = "Please Provide Valid Data" };
             }
 
             if (rfqId == 0 || supplierId == 0)
             {
-                return (false, "Please Enter Correct Id");
+                return new ResponseModel { Success = false, Message = "Please Enter Correct Id" };
             }
 
             var supplier = _context.Suppliers.Where(s => s.Deleted == 0 && s.Id == supplierId).FirstOrDefault();
             var rfq = _context.Rfqs.Where(r => r.Deleted == 0 && r.Id == rfqId).FirstOrDefault();
             if (supplier == null || rfq == null)
             {
-                return (false, "Please Enter Correct Id");
+                return new ResponseModel { Success = false, Message = "Please Enter Correct Id" };
             }
 
             var isParsed = DateTime.TryParse(supplierDeliveryDto.RecivingDateTime, out DateTime receivingDateTime);
             if (!isParsed)
             {
-                return (false, "Please Provide Correct Reciving Date Time");
+                return new ResponseModel { Success = false, Message = "Please Provide Correct Reciving Date Time" };
             }
 
             var suppliesDelivery = new SuppliesDelivery
@@ -60,16 +60,23 @@ namespace ProcurmentProject.Repositories
 
             if (supplierDeliveryDto.Attachment != null)
             {
-                var belongingName = "supplier_delivery";
-                var document = await _doc.UploadDocument(suppliesDelivery.Id, belongingName,supplierDeliveryDto.Attachment);
-                _context.Documents.Add(document);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    var belongingName = "supplier_delivery";
+                    var document = await _doc.UploadDocument(suppliesDelivery.Id, belongingName,supplierDeliveryDto.Attachment);
+                    _context.Documents.Add(document);
+                    await _context.SaveChangesAsync();
+                }
+                catch (InvalidDataException ex)
+                {
+                    return new ResponseModel { Success = false, Message = ex.Message };
+                }
             }
 
-            return (true, "Supplies Delivery Added Successfully");
+            return new ResponseModel { Success = true, Message = "Supplies Delivery Added Successfully", Id = suppliesDelivery.Id };
         }
 
-        public async Task<(bool success, string message, object? suppliesDelivery)> GetSuppliesDelivery(int? suppliesDeliveryId = null)
+        public async Task<ResponseModel> GetSuppliesDelivery(int? suppliesDeliveryId = null)
         {
             var query = _context.SuppliesDeliveries.Where(sd => sd.Deleted == 0);
             if (suppliesDeliveryId.HasValue)
@@ -101,29 +108,34 @@ namespace ProcurmentProject.Repositories
 
             if (suppliesDelivery.Count == 0)
             {
-                return (false, "No Supplies Delivery Found", null);
+                return new ResponseModel { Success = false, Message = "No Supplies Delivery Found" };
             }
 
-            return (true, "Supplies Delivery Fetch Successfully", suppliesDelivery);
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "Supplies Delivery Fetch Successfully",
+                Data = suppliesDelivery
+            };
         }
 
-        public async Task<(bool success, string message)> UpdateSuppliesDelivery(int suppliesDeliveryId, SupplierDeliveryDto supplierDeliveryDto)
+        public async Task<ResponseModel> UpdateSuppliesDelivery(int suppliesDeliveryId, SupplierDeliveryDto supplierDeliveryDto)
         {
             if (supplierDeliveryDto == null)
             {
-                return (false, "Please Provide Valid Data");
+                return new ResponseModel { Success = false, Message = "Please Provide Valid Data" };
             }
 
             var suppliesDelivery = _context.SuppliesDeliveries.Where(sd => sd.Deleted == 0 && sd.Id == suppliesDeliveryId).FirstOrDefault();
             if (suppliesDelivery == null)
             {
-                return (false, "No Supplies Delivery Found");
+                return new ResponseModel { Success = false, Message = "No Supplies Delivery Found" };
             }
 
             var isParsed = DateTime.TryParse(supplierDeliveryDto.RecivingDateTime, out DateTime receivingDateTime);
             if (!isParsed)
             {
-                return (false, "Please Provide Correct Reciving Date Time");
+                return new ResponseModel { Success = false, Message = "Please Provide Correct Reciving Date Time" };
             }
 
             suppliesDelivery.RecevingDatetime = receivingDateTime;
@@ -147,21 +159,28 @@ namespace ProcurmentProject.Repositories
                 }
 
                 await _context.SaveChangesAsync();
-                var belongingName = "supplier_delivery";
-                var newDocument = await _doc.UploadDocument(suppliesDeliveryId, belongingName, supplierDeliveryDto.Attachment);
-                _context.Documents.Add(newDocument);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    var belongingName = "supplier_delivery";
+                    var newDocument = await _doc.UploadDocument(suppliesDeliveryId, belongingName, supplierDeliveryDto.Attachment);
+                    _context.Documents.Add(newDocument);
+                    await _context.SaveChangesAsync();
+                }
+                catch (InvalidDataException ex)
+                {
+                    return new ResponseModel { Success = false, Message = ex.Message };
+                }
             }
 
-            return (true, "Supplies Delivery Updated Successfully");
+            return new ResponseModel { Success = true, Message = "Supplies Delivery Updated Successfully" };
         }
 
-        public async Task<(bool success, string message)> DeleteSuppliesDelivery(int suppliesDeliveryId)
+        public async Task<ResponseModel> DeleteSuppliesDelivery(int suppliesDeliveryId)
         {
             var suppliesDelivery = _context.SuppliesDeliveries.Where(sd => sd.Deleted == 0 && sd.Id == suppliesDeliveryId).FirstOrDefault();
             if (suppliesDelivery == null)
             {
-                return (false, "No Supplies Delivery Found");
+                return new ResponseModel { Success = false, Message = "No Supplies Delivery Found" };
             }
 
             suppliesDelivery.Deleted = 1;
@@ -176,7 +195,7 @@ namespace ProcurmentProject.Repositories
             }
 
             await _context.SaveChangesAsync();
-            return (true, "Supplies Delivery Deleted Successfully");
+            return new ResponseModel { Success = true, Message = "Supplies Delivery Deleted Successfully" };
         }
 
         

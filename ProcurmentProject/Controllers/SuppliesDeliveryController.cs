@@ -23,11 +23,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> AddSuppliesDelivery(int rfqId, int supplierId, [FromForm] SupplierDeliveryDto supplierDeliveryDto)
         {
             var result = await _suppliesDelivery.AddSuppliesDelivery(rfqId, supplierId, supplierDeliveryDto);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(result.message);
+            return Ok(result);
         }
 
         [HttpGet("get-supplies-delivery")]
@@ -36,15 +36,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetSuppliesDelivery()
         {
             var result = await _suppliesDelivery.GetSuppliesDelivery();
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(new
-            {
-                message = result.message,
-                suppliesDelivery = result.suppliesDelivery
-            });
+            return Ok(result);
         }
 
         [HttpGet("get-supplies-delivery-by-id")]
@@ -52,15 +48,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetSuppliesDeliveryById(int suppliesDeliveryId)
         {
             var result = await _suppliesDelivery.GetSuppliesDelivery(suppliesDeliveryId);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(new
-            {
-                message = result.message,
-                suppliesDelivery = result.suppliesDelivery
-            });
+            return Ok(result);
         }
 
         [HttpPost("update-supplies-delivery")]
@@ -68,11 +60,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> UpdateSuppliesDelivery(int suppliesDeliveryId, [FromForm] SupplierDeliveryDto supplierDeliveryDto)
         {
             var result = await _suppliesDelivery.UpdateSuppliesDelivery(suppliesDeliveryId, supplierDeliveryDto);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(result.message);
+            return Ok(result);
         }
 
         [HttpDelete("delete-supplies-delivery")]
@@ -80,11 +72,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> DeleteSuppliesDelivery(int suppliesDeliveryId)
         {
             var result = await _suppliesDelivery.DeleteSuppliesDelivery(suppliesDeliveryId);
-            if (!result.success)
+            if (!result.Success)
             {
-                return BadRequest(result.message);
+                return BadRequest(result.Message);
             }
-            return Ok(result.message);
+            return Ok(result);
         }
     }
 }

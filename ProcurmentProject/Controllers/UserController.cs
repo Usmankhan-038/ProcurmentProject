@@ -27,29 +27,30 @@ namespace ProcurmentProject.Controllers
             }
             var userSignUp = await _user.CreateUser(userDetail);
 
-            if(!userSignUp.success)
+            if(!userSignUp.Success)
             {
-                return BadRequest(userSignUp.message);
+                return BadRequest(userSignUp.Message);
             }
-            return Ok(userSignUp.message);
+            return Ok(userSignUp);
         }
 
         [HttpPost("Login")]
         public async Task<ActionResult> Login([FromForm] string userEmail,[FromForm] string password)
         {
             var isLogin = await _user.Login(userEmail, password);
-            if (!isLogin.success)
+            if (!isLogin.Success)
             {
-                return BadRequest(isLogin.message);
+                return BadRequest(isLogin.Message);
             }
-            Response.Cookies.Append("X-AccessToken", isLogin.token!, new CookieOptions
+            var token = isLogin.Data?.ToString();
+            Response.Cookies.Append("X-AccessToken", token!, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
                 Expires = DateTime.Now.AddMinutes(15)
             });
-            return Ok(new { message = isLogin.message, accesstoken = isLogin.token });
+            return Ok(new ResponseModel { Success = true, Message = isLogin.Message, Data = token });
         }
     }
 }

@@ -13,11 +13,11 @@ namespace ProcurmentProject.Repositories
         {
             _context = context;
         }
-        public async Task<(bool success, string message)> AddSupplier(SuppliersDto supplier)
+        public async Task<ResponseModel> AddSupplier(SuppliersDto supplier)
         {
             if (supplier == null)
             {
-                return (false, "Please Provide Correct data");
+                return new ResponseModel { Success = false, Message = "Please Provide Correct data" };
             }
             var newUser = new User
             {
@@ -28,8 +28,12 @@ namespace ProcurmentProject.Repositories
 
             };
             _context.Users.Add(newUser);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             var supplierRoleId = _context.Roles.Where(p => p.Name == "Supplier").Select(pp => new { id = pp.Id }).FirstOrDefault();
+            if (supplierRoleId == null)
+            {
+                return new ResponseModel { Success = false, Message = "Something wents wrong" };
+            }
             var newUserRole = new UserRole
             {
                 UserId = newUser.Id,
@@ -44,15 +48,28 @@ namespace ProcurmentProject.Repositories
             };
             _context.Suppliers.Add(newSupplier);
             await _context.SaveChangesAsync();
-            return (true, "Supplier Added Successfully");
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "Supplier Added Successfully",
+                Id = newSupplier.Id
+            };
         }
-        public async Task<(bool success, string message)> UpdateSupplier(int Id, SuppliersDto supplierDto)
+        public async Task<ResponseModel> UpdateSupplier(int Id, SuppliersDto supplierDto)
         {
             var supplier = _context.Suppliers.Where(s=>s.Deleted==0 && s.Id == Id).FirstOrDefault();
-            var supplierUser = _context.Users.Where(s => s.Deleted==0 && s.Id == supplier.UserId).FirstOrDefault();
             if (supplierDto == null)
             {
-                return (false, "Please Provide Correct data");
+                return new ResponseModel { Success = false, Message = "Please Provide Correct data" };
+            }
+            if (supplier == null)
+            {
+                return new ResponseModel { Success = false, Message = "Please Enter Correct Id" };
+            }
+            var supplierUser = _context.Users.Where(s => s.Deleted==0 && s.Id == supplier.UserId).FirstOrDefault();
+            if (supplierUser == null)
+            {
+                return new ResponseModel { Success = false, Message = "Something wents wrong" };
             }
 
             supplierUser.Name = supplierDto.UserData.Name;
@@ -60,34 +77,33 @@ namespace ProcurmentProject.Repositories
             supplierUser.Phone = supplierDto.UserData.Phone;
             supplierUser.Password = BCrypt.Net.BCrypt.HashPassword(supplierDto.UserData.Password);
 
-
             supplier.CompanyName = supplierDto.CompanyName;
             supplier.NtnTaxNumber = supplierDto.NtnTaxNumber;
             await _context.SaveChangesAsync();
-            return (true, "Supplier Update Successfully");
+            return new ResponseModel { Success = true, Message = "Supplier Update Successfully" };
         }
         
-        public async Task<(bool success, string message)> DeleteSupplier(int supplierId)
+        public async Task<ResponseModel> DeleteSupplier(int supplierId)
         {
             var supplier =  _context.Suppliers.Where(s => s.Deleted == 0 && s.Id == supplierId).FirstOrDefault();
             
             if (supplier == null)
             {
-                return (false, "Please Enter Correct Id");
+                return new ResponseModel { Success = false, Message = "Please Enter Correct Id" };
             }
 
             var supplierUser = _context.Users.Where(s => s.Deleted == 0 && s.Id == supplier!.UserId).FirstOrDefault();
             
             if (supplierUser == null)
             {
-                return (false, "Something wents wrong");
+                return new ResponseModel { Success = false, Message = "Something wents wrong" };
             }
             supplierUser.Deleted = 1;
             supplier.Deleted = 1;
             await _context.SaveChangesAsync();
-            return (true, "Supplier Deleted Successfully");
+            return new ResponseModel { Success = true, Message = "Supplier Deleted Successfully" };
         }
-        public async Task<(bool success, string message, Object? supplier)> GetAllSupplier()
+        public async Task<ResponseModel> GetAllSupplier()
         {
             var suppliers = await _context.Suppliers
                 .Where(s => s.Deleted == 0)
@@ -100,11 +116,16 @@ namespace ProcurmentProject.Repositories
                     CompanyName = supplier.CompanyName,
                     NtnNumber = supplier.NtnTaxNumber,
                 }).ToListAsync();
-            if(suppliers == null)
+            if(suppliers.Count == 0)
             {
-                return (true, "No Data Found", null);
+                return new ResponseModel { Success = false, Message = "No Data Found" };
             }
-            return (true, "All Data fetch successfully", suppliers);
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "All Data fetch successfully",
+                Data = suppliers
+            };
         }
     }
 }

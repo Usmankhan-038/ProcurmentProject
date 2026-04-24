@@ -14,16 +14,16 @@ namespace ProcurmentProject.Repositories
             _context = context;
         }
 
-        public async Task<(bool success, string message)> AddSupplierQuotation(int supplierId, int productId, int rfqId, SupplierQuotationDto supplierQuotationDto)
+        public async Task<ResponseModel> AddSupplierQuotation(int supplierId, int productId, int rfqId, SupplierQuotationDto supplierQuotationDto)
         {
             if (supplierQuotationDto == null)
             {
-                return (false, "Please Provide Valid Data");
+                return new ResponseModel { Success = false, Message = "Please Provide Valid Data" };
             }
 
             if (supplierId == 0 || productId == 0 || rfqId == 0)
             {
-                return (false, "Please Provide Correct Id");
+                return new ResponseModel { Success = false, Message = "Please Provide Correct Id" };
             }
 
             var supplier = _context.Suppliers.Where(s => s.Deleted == 0 && s.Id == supplierId).FirstOrDefault();
@@ -32,7 +32,7 @@ namespace ProcurmentProject.Repositories
 
             if (supplier == null || product == null || rfq == null)
             {
-                return (false, "Please Provide Correct Id");
+                return new ResponseModel { Success = false, Message = "Please Provide Correct Id" };
             }
 
             var quotation = new SupplierQuotation
@@ -47,10 +47,10 @@ namespace ProcurmentProject.Repositories
 
             _context.SupplierQuotations.Add(quotation);
             await _context.SaveChangesAsync();
-            return (true, "Supplier Quotation Added Successfully");
+            return new ResponseModel { Success = true, Message = "Supplier Quotation Added Successfully", Id = quotation.Id };
         }
 
-        public async Task<(bool success, string message, object? supplierQuotation)> GetSupplierQuotation(int? quotationId = null)
+        public async Task<ResponseModel> GetSupplierQuotation(int? quotationId = null)
         {
             var query = _context.SupplierQuotations.Where(sq => sq.Deleted == 0);
 
@@ -77,7 +77,7 @@ namespace ProcurmentProject.Repositories
 
             if (supplierQuotation.Count == 0)
             {
-                return (false, "No Supplier Quotation Found", null);
+                return new ResponseModel { Success = false, Message = "No Supplier Quotation Found" };
             }
 
             var supplierQuotationWithBids = supplierQuotation
@@ -107,10 +107,15 @@ namespace ProcurmentProject.Repositories
                     });
                 }).ToList();
 
-            return (true, "Supplier Quotation Fetch Successfully", supplierQuotationWithBids);
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "Supplier Quotation Fetch Successfully",
+                Data = supplierQuotationWithBids
+            };
         }
 
-        public async Task<(bool success, string message, object? supplierQuotation)> GetSupplierQuotationByProductId(int productId)
+        public async Task<ResponseModel> GetSupplierQuotationByProductId(int productId)
         {
             var supplierQuotation = await _context.SupplierQuotations
                 .Where(sq => sq.Deleted == 0 && sq.ProductId == productId)
@@ -131,7 +136,7 @@ namespace ProcurmentProject.Repositories
 
             if (supplierQuotation.Count == 0)
             {
-                return (false, "No Supplier Quotation Found", null);
+                return new ResponseModel { Success = false, Message = "No Supplier Quotation Found" };
             }
 
             var supplierQuotationWithBids = supplierQuotation
@@ -160,20 +165,25 @@ namespace ProcurmentProject.Repositories
                     });
                 }).ToList();
 
-            return (true, "Supplier Quotation Fetch Successfully", supplierQuotationWithBids);
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "Supplier Quotation Fetch Successfully",
+                Data = supplierQuotationWithBids
+            };
         }
 
-        public async Task<(bool success, string message)> UpdateSupplierQuotation(int quotationId, SupplierQuotationDto supplierQuotationDto)
+        public async Task<ResponseModel> UpdateSupplierQuotation(int quotationId, SupplierQuotationDto supplierQuotationDto)
         {
             if (supplierQuotationDto == null)
             {
-                return (false, "Please Provide Valid Data");
+                return new ResponseModel { Success = false, Message = "Please Provide Valid Data" };
             }
 
             var quotation = _context.SupplierQuotations.Where(sq => sq.Deleted == 0 && sq.Id == quotationId).FirstOrDefault();
             if (quotation == null)
             {
-                return (false, "No Supplier Quotation Found");
+                return new ResponseModel { Success = false, Message = "No Supplier Quotation Found" };
             }
 
             quotation.UnitPrice = supplierQuotationDto.UnitPrice.ToString();
@@ -183,21 +193,21 @@ namespace ProcurmentProject.Repositories
 
             _context.SupplierQuotations.Update(quotation);
             await _context.SaveChangesAsync();
-            return (true, "Supplier Quotation Updated Successfully");
+            return new ResponseModel { Success = true, Message = "Supplier Quotation Updated Successfully" };
         }
 
-        public async Task<(bool success, string message)> DeleteSupplierQuotation(int quotationId)
+        public async Task<ResponseModel> DeleteSupplierQuotation(int quotationId)
         {
             var quotation = _context.SupplierQuotations.Where(sq => sq.Deleted == 0 && sq.Id == quotationId).FirstOrDefault();
             if (quotation == null)
             {
-                return (false, "No Supplier Quotation Found");
+                return new ResponseModel { Success = false, Message = "No Supplier Quotation Found" };
             }
 
             quotation.Deleted = 1;
             _context.SupplierQuotations.Update(quotation);
             await _context.SaveChangesAsync();
-            return (true, "Supplier Quotation Deleted Successfully");
+            return new ResponseModel { Success = true, Message = "Supplier Quotation Deleted Successfully" };
         }
 
         private int ParsePrice(string? price)

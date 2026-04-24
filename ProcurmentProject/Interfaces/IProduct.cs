@@ -7,7 +7,7 @@ namespace ProcurmentProject.Interfaces
     {
         public Task<ResponseModel> AddProduct(ProductDto prodDto);
         public Task<ResponseModel> GetProductById(int productId);
-        public ResponseModel GetAllProduct();
+        public Task<ResponseModel> GetAllProduct();
         public Task<ResponseModel> UpdateProduct(int productId, ProductDto product);
         public Task<ResponseModel> DeleteProduct(int productId);
         public Task<ResponseModel> AddPrProduct(int productId, int prId);

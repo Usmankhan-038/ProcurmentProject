@@ -6,6 +6,6 @@ namespace ProcurmentProject.Interfaces
     public interface ICompany
     {
         public Task<ResponseModel> AddCompany(CompanyDto company);
-        public Task<List<Object>> GetAllCompany();
+        public Task<ResponseModel> GetAllCompany();
     }
 }

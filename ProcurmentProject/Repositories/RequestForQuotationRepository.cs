@@ -22,11 +22,11 @@ namespace ProcurmentProject.Repositories
             _config = config;
             _documentUploader = documentUploader;
         }
-        public async Task<(bool success, string message)> CreateRfq(int PrId, RfqDto rfqDto)
+        public async Task<ResponseModel> CreateRfq(int PrId, RfqDto rfqDto)
         {
-            if(PrId == null)
+            if(PrId == 0)
             {
-                return (false, "please enter correct Pr Id");
+                return new ResponseModel { Success = false, Message = "please enter correct Pr Id" };
             }
 
             var newRfq = new Rfq
@@ -38,22 +38,27 @@ namespace ProcurmentProject.Repositories
             await _context.SaveChangesAsync();
             if (rfqDto.Attachment != null)
             {
-
-                var document = await _documentUploader.UploadDocument(newRfq.Id, "rfq", rfqDto.Attachment);
-
-                _context.Documents.Add(document);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    var document = await _documentUploader.UploadDocument(newRfq.Id, "rfq", rfqDto.Attachment);
+                    _context.Documents.Add(document);
+                    await _context.SaveChangesAsync();
+                }
+                catch (InvalidDataException ex)
+                {
+                    return new ResponseModel { Success = false, Message = ex.Message };
+                }
             }
 
-            return (true, "RFQ Created Successful");
+            return new ResponseModel { Success = true, Message = "RFQ Created Successful", Id = newRfq.Id };
         }
-        public async Task<(bool success, string message)> SendQuotationToAllSupplier(int rfqId)
+        public async Task<ResponseModel> SendQuotationToAllSupplier(int rfqId)
         { 
             var rfq = _context.Rfqs.Where(r => r.Deleted == 0 && r.Id == rfqId).FirstOrDefault();
 
             if (rfq == null)
             {
-                return (false, "please enter correct id");
+                return new ResponseModel { Success = false, Message = "please enter correct id" };
             }
 
             var suppliers =  _context.Suppliers.Where(s => s.Deleted == 0)
@@ -107,15 +112,15 @@ namespace ProcurmentProject.Repositories
                     await _email.SendMail(sup.Email!, subject, messageBody);
                 }
             }
-            return (true, "Send Quotation to All Supplier");
+            return new ResponseModel { Success = true, Message = "Send Quotation to All Supplier" };
         }
-        public async Task<(bool success, string message)> SendQuotationToSpecificSupplier(List<int> supplierId, int rfqId)
+        public async Task<ResponseModel> SendQuotationToSpecificSupplier(List<int> supplierId, int rfqId)
         {
             var rfq = _context.Rfqs.Where(r => r.Deleted == 0 && r.Id == rfqId).FirstOrDefault();
 
             if (rfq == null)
             {
-                return (false, "please enter correct id");
+                return new ResponseModel { Success = false, Message = "please enter correct id" };
             }
 
             var suppliers = _context.Suppliers.Where(s => s.Deleted == 0 && supplierId.Contains(s.Id))
@@ -171,10 +176,10 @@ namespace ProcurmentProject.Repositories
                 }
              
             }
-            return (true, "Send Quotation to All Supplier");
+            return new ResponseModel { Success = true, Message = "Send Quotation to All Supplier" };
         }
 
-        public async Task<(bool success, string message, object? rfqs)> GetAllRfqs()
+        public async Task<ResponseModel> GetAllRfqs()
         {
             var baseUrl = _config.GetConnectionString("BaseUrl");
 
@@ -208,23 +213,28 @@ namespace ProcurmentProject.Repositories
                 
 
                 }).ToListAsync();
-            if(rfqs == null )
+            if(rfqs.Count == 0 )
             {
-                return (false, "No RFQ Found", null);
+                return new ResponseModel { Success = false, Message = "No RFQ Found" };
             }
-            return (true, "Successfully Fetch Rfqs",rfqs);
-        }
-        public async Task<(bool success, string message)> UpdateRfq(int rfqId, RfqDto rfqDto)
-        {
-            if (rfqId == null)
+            return new ResponseModel
             {
-                return (false, "please enter correct  Rfq Id");
+                Success = true,
+                Message = "Successfully Fetch Rfqs",
+                Data = rfqs
+            };
+        }
+        public async Task<ResponseModel> UpdateRfq(int rfqId, RfqDto rfqDto)
+        {
+            if (rfqId == 0)
+            {
+                return new ResponseModel { Success = false, Message = "please enter correct  Rfq Id" };
             }
             var rfq = _context.Rfqs.Where(r => r.Deleted == 0 && r.Id == rfqId).FirstOrDefault();
 
             if (rfq == null)
             {
-                return (false, "Please Enter Correct Id");
+                return new ResponseModel { Success = false, Message = "Please Enter Correct Id" };
             }
             rfq.Status = rfqDto.Status;
 
@@ -239,52 +249,34 @@ namespace ProcurmentProject.Repositories
                     _context.Documents.Add(document);
                     await _context.SaveChangesAsync();
                 }
-
-                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads", "rfqs");
-
-                if (!Directory.Exists(folderPath))
+                try
                 {
-                    Directory.CreateDirectory(folderPath);
+                    var newDocument = await _documentUploader.UploadDocument(rfqId, "rfq", rfqDto.Attachment);
+                    _context.Documents.Add(newDocument);
+                    await _context.SaveChangesAsync();
                 }
-
-                var OrignalFileName = Path.GetFileName(rfqDto.Attachment.FileName);
-                var extension = Path.GetExtension(rfqDto.Attachment.FileName);
-                var encodedFileName = Guid.NewGuid().ToString() + DateTime.Now + extension;
-                string fullPath = Path.Combine(folderPath, encodedFileName);
-
-                using (var stream = new FileStream(fullPath, FileMode.Create))
+                catch (InvalidDataException ex)
                 {
-                    await rfqDto.Attachment.CopyToAsync(stream);
+                    return new ResponseModel { Success = false, Message = ex.Message };
                 }
-
-                var newDocument = new Models.Document
-                {
-
-                    BelongName = "rfq",
-                    EncodedFileName = encodedFileName,
-                    OriginalFileName = OrignalFileName,
-                    Url = folderPath
-                };
-                _context.Documents.Add(newDocument);
-                await _context.SaveChangesAsync();
             }
-            return (true, "Rfq updated Successfully");
+            return new ResponseModel { Success = true, Message = "Rfq updated Successfully" };
         }
-        public async Task<(bool success, string message)> DeleteRfq(int rfqId)
+        public async Task<ResponseModel> DeleteRfq(int rfqId)
         {
             
-            if(rfqId == null)
+            if(rfqId == 0)
             {
-                return (false, "Please Enter correct Id");
+                return new ResponseModel { Success = false, Message = "Please Enter correct Id" };
             }
             var rfq = _context.Rfqs.Where(r => r.Deleted == 0 && r.Id == rfqId).FirstOrDefault();
             if (rfq == null)
             {
-                return (false,"Please Enter Correct Id");
+                return new ResponseModel { Success = false, Message = "Please Enter Correct Id" };
             }
             rfq.Deleted = 1; 
             await _context.SaveChangesAsync();
-            return (true, "Rfq Deleted SuccessFully");
+            return new ResponseModel { Success = true, Message = "Rfq Deleted SuccessFully" };
         }
     }
 }

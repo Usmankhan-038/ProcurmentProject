@@ -40,13 +40,13 @@ namespace ProcurmentProject.Filters
             {
 
                 var rolePermission = await _role.GetPermissionByUserId(userId);
-                if (!rolePermission.success || rolePermission.permission == null)
+                if (!rolePermission.Success || rolePermission.Data == null)
                 {
                     context.Result = new JsonResult(new { message = "Unauthorized Access" }) { StatusCode = 403 };
                     return;
                 }
 
-                permissionJson = rolePermission.permission;
+                permissionJson = rolePermission.Data.ToString();
 
                 _cache.Set(cacheKey, permissionJson, TimeSpan.FromHours(1));
             }

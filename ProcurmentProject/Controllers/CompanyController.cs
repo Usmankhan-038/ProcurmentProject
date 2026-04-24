@@ -44,6 +44,10 @@ namespace ProcurmentProject.Controllers
         public async Task<ActionResult> GetAllCompany()
         { 
             var companyList = await _company.GetAllCompany();
+            if (!companyList.Success)
+            {
+                return BadRequest(companyList.Message);
+            }
             return Ok(companyList);
         }
 

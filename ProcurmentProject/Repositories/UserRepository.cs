@@ -23,17 +23,17 @@ namespace ProcurmentProject.Repositories
             _context = context;
             _config = config;
         }
-        public async Task<(bool success, string message)> CreateUser(SignUpDto signup)
+        public async Task<ResponseModel> CreateUser(SignUpDto signup)
         {
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 if (signup == null)
                 {
-                    return (false, "The Data is incomplete. Please Enter Complete Data");
+                    return new ResponseModel { Success = false, Message = "The Data is incomplete. Please Enter Complete Data" };
                 } else if (signup.Password != signup.Confirmpassword)
                 {
-                    return (false, "Password and confirm password must be same");
+                    return new ResponseModel { Success = false, Message = "Password and confirm password must be same" };
                 }
 
                 signup.Password = BCrypt.Net.BCrypt.HashPassword(signup.Password);
@@ -41,7 +41,7 @@ namespace ProcurmentProject.Repositories
                 bool isEmailExist = _context.Users.Any(user => user.Email == signup.Email);
                 if (isEmailExist)
                 {
-                    return (false, "This email is already exist,use another email please");
+                    return new ResponseModel { Success = false, Message = "This email is already exist,use another email please" };
                 }
                 var user = new User
                 {
@@ -58,11 +58,11 @@ namespace ProcurmentProject.Repositories
                 await _context.SaveChangesAsync();
 
 
-                var company = _context.Companies.FirstOrDefault(user => user.Name == signup.companyName);
+                var company = _context.Companies.FirstOrDefault(user => user.Name == signup.CompanyName);
 
                 if(company == null)
                 {
-                    return (false, "Company you enter is not Valid");
+                    return new ResponseModel { Success = false, Message = "Company you enter is not Valid" };
                 }
 
                 var userCompany = new UserCompany
@@ -75,23 +75,23 @@ namespace ProcurmentProject.Repositories
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
-                return (true, "User Created Successfully");
+                return new ResponseModel { Success = true, Message = "User Created Successfully", Id = user.Id };
             } catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return (false, "Something went Wrong");
+                return new ResponseModel { Success = false, Message = "Something went Wrong" };
             }
         }
-        public async Task<(bool success,string? token, string message)> Login(string userEmail, string password)
+        public async Task<ResponseModel> Login(string userEmail, string password)
         {
             if(userEmail == null && password == null)
             {
-                return (false,null,"Please Email and Password");
+                return new ResponseModel { Success = false, Message = "Please Email and Password" };
             }
             var user= _context.Users.FirstOrDefault(user => user.Email == userEmail);
             if(user == null)
             {
-                return (false, null, "please enter correct credential");
+                return new ResponseModel { Success = false, Message = "please enter correct credential" };
             }    
             var userRole = _context.UserRoles
                 .Include(ur => ur.Role)
@@ -102,10 +102,10 @@ namespace ProcurmentProject.Repositories
             if (user != null || BCrypt.Net.BCrypt.Verify(password, user.Password))
             {
                 var token =  GenerateAccessToken(user.Id,userRole);
-                return (true,token,"Login Successfully");
+                return new ResponseModel { Success = true, Message = "Login Successfully", Data = token };
             } else
             {
-                return (false, null, "Credentials aren't correct");
+                return new ResponseModel { Success = false, Message = "Credentials aren't correct" };
             }
                 
         }

@@ -14,11 +14,11 @@ namespace ProcurmentProject.Repositories
             _context = context;
         }
 
-        public async Task<(bool success, string message, int? prId)> CreatePrRequest(int userId, PurchasedRequisitionDto prRequest)
+        public async Task<ResponseModel> CreatePrRequest(int userId, PurchasedRequisitionDto prRequest)
         {
             if (prRequest == null)
             {
-                return (false, "Please Provide Valid Data", null);
+                return new ResponseModel { Success = false, Message = "Please Provide Valid Data" };
             }
             var request = new PurchasedRequisition
             {
@@ -35,19 +35,19 @@ namespace ProcurmentProject.Repositories
             _context.PurchasedRequisitions.Add(request);
             await _context.SaveChangesAsync();
 
-            return (true, "Successfully Created Pr", request.Id);
+            return new ResponseModel { Success = true, Message = "Successfully Created Pr", Id = request.Id };
         }
         
-        public async Task<(bool success, string message, int? prId)> UpdatePrRequest(int prId,PurchasedRequisitionDto prRequest)
+        public async Task<ResponseModel> UpdatePrRequest(int prId,PurchasedRequisitionDto prRequest)
         {
             if(prRequest == null)
             {
-                return (false, "Please Enter Valid Data",null);
+                return new ResponseModel { Success = false, Message = "Please Enter Valid Data" };
             }
             var request =  _context.PurchasedRequisitions.Where(x => x.Deleted==0 && x.Id== prId).FirstOrDefault();
             if (request == null)
             {
-                return (false, "Invalid Id", null);
+                return new ResponseModel { Success = false, Message = "Invalid Id" };
             }
             request.Quantity = prRequest.Quantity;
             request.EstimatedBudget = prRequest.Estimated_budget;
@@ -60,9 +60,9 @@ namespace ProcurmentProject.Repositories
             _context.PurchasedRequisitions.Update(request);
             await _context.SaveChangesAsync();
 
-            return (true, "Successfully Created Pr", request.Id);
+            return new ResponseModel { Success = true, Message = "Successfully Created Pr", Id = request.Id };
         }
-        public async Task<(bool success, string message, Object? prRequest)> GetPrRequest(int? prId = null)
+        public async Task<ResponseModel> GetPrRequest(int? prId = null)
         {
             var query =  _context.PurchasedRequisitions
                 .Where(pr => pr.Deleted == 0);
@@ -91,14 +91,19 @@ namespace ProcurmentProject.Repositories
                 }).Distinct()
                 .ToListAsync();
 
-            if (prRequest == null)
+            if (prRequest.Count == 0)
             {
-                return (false, "No PR Found", null);
+                return new ResponseModel { Success = false, Message = "No PR Found" };
             }
-            return (true, "PR Data Fetched", prRequest);
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "PR Data Fetched",
+                Data = prRequest
+            };
         }
 
-        public async Task<(bool success, string message)> DeletePrRequest(int prId)
+        public async Task<ResponseModel> DeletePrRequest(int prId)
         {
             var transaction = await _context.Database.BeginTransactionAsync();
             var request = _context.PurchasedRequisitions.Where(x => x.Id == prId).FirstOrDefault();
@@ -106,7 +111,7 @@ namespace ProcurmentProject.Repositories
             {
                 if (request == null)
                 {
-                    return (false, "the id is not valid");
+                    return new ResponseModel { Success = false, Message = "the id is not valid" };
                 }
                 request.Deleted = 1;
                 var products = await _context.PrProducts.Where(pp => pp.PrId == request.Id && pp.Deleted == 0)
@@ -124,12 +129,12 @@ namespace ProcurmentProject.Repositories
 
                 await _context.SaveChangesAsync();
                 transaction.CommitAsync();
-                return (true, "successfully deleted product");
+                return new ResponseModel { Success = true, Message = "successfully deleted product" };
 
             } catch
             {
                 transaction.Rollback();
-                return (false, "Pr is not deleted properly");
+                return new ResponseModel { Success = false, Message = "Pr is not deleted properly" };
             }
           
         }

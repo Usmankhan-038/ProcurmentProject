@@ -14,11 +14,15 @@ namespace ProcurmentProject.Repositories
             _context = context;
         }
 
-        public async Task<(bool success, string message)> AddAccessRole(RoleDto role)
+        public async Task<ResponseModel> AddAccessRole(RoleDto role)
         {
             if(role.RoleName == null || role.Permission == null)
             {
-                return (false, "Both the field are required");
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "Both the field are required"
+                };
             }
 
             var accessRole = new Role
@@ -32,29 +36,38 @@ namespace ProcurmentProject.Repositories
             _context.Roles.Add(accessRole);
             await _context.SaveChangesAsync();
 
-            return (true, "Successfully added role");
-        }
-        public async Task<(bool success, string message, Role? role)> GetRole(int roleId)
-        {
-            if (roleId == null)
+            return new ResponseModel
             {
-                return (false, "Role Id is required", null);
-            }
-
+                Success = true,
+                Message = "Successfully added role",
+                Id = Convert.ToInt32(accessRole.Id)
+            };
+        }
+        public async Task<ResponseModel> GetRole(int roleId)
+        {
             var role =  _context.Roles.FirstOrDefault(role => role.Id == roleId);
             if(role == null)
             {
-                return (false, "Id is Invalid", null);
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "Id is Invalid"
+                };
             }
             else
             {
-                return (true, "Role Fetch Successfully", role);
+                return new ResponseModel
+                {
+                    Success = true,
+                    Message = "Role Fetch Successfully",
+                    Data = role
+                };
             }
         }
 
-        public async  Task<Object> GetAllUserRole()
+        public async Task<ResponseModel> GetAllUserRole()
         {
-            var userRole = _context.Users
+            var userRole = await _context.Users
                 .Include(ur => ur.UserRoles)
                     .ThenInclude(r => r.Role)
                 .Where(r => r.Deleted == 0)
@@ -68,23 +81,45 @@ namespace ProcurmentProject.Repositories
                     roleName = u.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault(),
                     permission = u.UserRoles.Select(ur => ur.Role.Permission).FirstOrDefault(),
                 })
-                .Where(r => r.roleName != null && r.permission != null);
-                
+                .Where(r => r.roleName != null && r.permission != null)
+                .ToListAsync();
 
-            return userRole.Cast<object>();
+            if (userRole.Count == 0)
+            {
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "No User Role Found"
+                };
+            }
+
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "User Role Fetch Successfully",
+                Data = userRole
+            };
         }
 
-        public async Task<(bool success, string message)> DeleteRole(int roleId)
+        public async Task<ResponseModel> DeleteRole(int roleId)
         {
             
             var role = await _context.Roles.FindAsync(roleId);
             if (role == null)
             {
-                return (false, "Invalid ID");
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "Invalid ID"
+                };
             }
             role.Deleted = 1;
             await _context.SaveChangesAsync();
-            return (true, "Remove Successfully");
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "Remove Successfully"
+            };
             
 
         }
@@ -111,7 +146,7 @@ namespace ProcurmentProject.Repositories
             };
         }
 
-        public async Task<(bool success,string message, string? permission)> GetPermissionByUserId(int userId)
+        public async Task<ResponseModel> GetPermissionByUserId(int userId)
         {
             var userPermission = _context.UserRoles
                 .Where(u => u.UserId == userId)
@@ -119,9 +154,18 @@ namespace ProcurmentProject.Repositories
                 .FirstOrDefault();
             if(userPermission == null)
             {
-                return (false,"Something wents wrong",null);
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "Something wents wrong"
+                };
             }
-            return (true,"permission fetch successfully",userPermission.permission);
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "permission fetch successfully",
+                Data = userPermission.permission
+            };
         }
     }
 }

@@ -31,11 +31,11 @@ namespace ProcurmentProject.Controllers
                 return BadRequest(ModelState);
             }
             var accessRole = await _role.AddAccessRole(role);
-            if (!accessRole.success)
+            if (!accessRole.Success)
             {
-                return BadRequest(accessRole.message);
+                return BadRequest(accessRole.Message);
             }
-            return Ok(accessRole.message);
+            return Ok(accessRole);
         }
 
         [HttpGet("get-userroles")]
@@ -44,6 +44,10 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetUserRole()
         {
             var userRole = await _role.GetAllUserRole();
+            if (!userRole.Success)
+            {
+                return BadRequest(userRole.Message);
+            }
             return Ok(userRole);
         }
         [HttpDelete("delete-role")]
@@ -52,11 +56,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> DeleteRole([FromBody] int id)
         {
             var deletedRole = await _role.DeleteRole(id);
-            if (!deletedRole.success)
+            if (!deletedRole.Success)
             {
-                return BadRequest(deletedRole.message);
+                return BadRequest(deletedRole.Message);
             }
-            return Ok(deletedRole.message);
+            return Ok(deletedRole);
         }
    
         [HttpPost("Update-role")]

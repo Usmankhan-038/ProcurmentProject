@@ -7,12 +7,12 @@ namespace ProcurmentProject.Interfaces
 {
     public interface IRole
     {
-        public Task<(bool success, string message)> AddAccessRole(RoleDto role);
-        public Task<(bool success, string message, Role? role)> GetRole(int roleId);
-        public Task<Object> GetAllUserRole();
-        public Task<(bool success, string message)> DeleteRole(int roleId);
+        public Task<ResponseModel> AddAccessRole(RoleDto role);
+        public Task<ResponseModel> GetRole(int roleId);
+        public Task<ResponseModel> GetAllUserRole();
+        public Task<ResponseModel> DeleteRole(int roleId);
         public Task<ResponseModel> UpdateRole(int id,RoleDto role);
-        public Task<(bool success, string message, string? permission)> GetPermissionByUserId(int userId);
+        public Task<ResponseModel> GetPermissionByUserId(int userId);
 
     }
 }

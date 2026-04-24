@@ -25,11 +25,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> AddSupplier([FromBody] SuppliersDto suppliersDto)
         {
             var supplier = await _supplier.AddSupplier(suppliersDto);
-            if(!supplier.success)
+            if(!supplier.Success)
             {
-                return BadRequest(supplier.message);
+                return BadRequest(supplier.Message);
             }
-            return Ok(supplier.message);
+            return Ok(supplier);
         }
         [HttpPost("update-supplier")]
         [HasPermission("supplier", "Update")]
@@ -37,11 +37,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> UpdateSupplier( int Id,[FromBody] SuppliersDto suppliersDto)
         {
             var supplier = await _supplier.UpdateSupplier(Id,suppliersDto);
-            if (!supplier.success)
+            if (!supplier.Success)
             {
-                return BadRequest(supplier.message);
+                return BadRequest(supplier.Message);
             }
-            return Ok(supplier.message);
+            return Ok(supplier);
         }
 
         [HttpDelete("delete-supplier")]
@@ -50,11 +50,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> DeleteSupplier([FromBody] int Id)
         {
             var supplier = await _supplier.DeleteSupplier(Id);
-            if (!supplier.success)
+            if (!supplier.Success)
             {
-                return BadRequest(supplier.message);
+                return BadRequest(supplier.Message);
             }
-            return Ok(supplier.message);
+            return Ok(supplier);
         }
 
         [HttpGet("get-supplier")]
@@ -63,14 +63,11 @@ namespace ProcurmentProject.Controllers
         public async Task<IActionResult> GetSupplier()
         {
             var supplier = await _supplier.GetAllSupplier();
-            if (!supplier.success)
+            if (!supplier.Success)
             {
-                return BadRequest(supplier.message);
+                return BadRequest(supplier.Message);
             }
-            return Ok(new { 
-                message = supplier.message,
-                supplier = supplier.supplier
-            });
+            return Ok(supplier);
         }
     }
 

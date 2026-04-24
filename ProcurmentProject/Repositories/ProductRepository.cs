@@ -1,4 +1,5 @@
-﻿using ProcurmentProject.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
@@ -44,7 +45,7 @@ namespace ProcurmentProject.Repositories
         }
         public async Task<ResponseModel> GetProductById(int productId)
         {
-            var product = _context.Products.Where(x => x.Deleted == 0).FirstOrDefault();
+            var product = await _context.Products.Where(x => x.Deleted == 0).FirstOrDefaultAsync();
             if(product == null)
             {
                 return new ResponseModel 
@@ -57,11 +58,12 @@ namespace ProcurmentProject.Repositories
             { 
                 Success = true, 
                 Message = "Product Fetch Successfully", 
-                Data = product };
+                Data = product 
+            };
         }
-        public ResponseModel GetAllProduct()
+        public async Task<ResponseModel> GetAllProduct()
         {
-            var product = _context.Products.Where(x => x.Deleted == 0).ToList();
+            var product = await _context.Products.Where(x => x.Deleted == 0).ToListAsync();
             if (product != null)
             { 
                 return new ResponseModel
