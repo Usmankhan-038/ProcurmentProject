@@ -17,8 +17,6 @@ namespace ProcurmentProject.Dto
         public string? ProductCompany { get; set; }
         public string? ProductDescription { get; set; }
         public string? ProductUPC { get; set; }
-
-  
         [JsonIgnore]
         public string? Documents { get; set; }
 
