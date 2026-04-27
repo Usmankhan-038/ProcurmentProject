@@ -183,36 +183,37 @@ namespace ProcurmentProject.Repositories
         {
             var baseUrl = _config.GetConnectionString("BaseUrl");
 
-            var rfqs = await _context.Rfqs.Where(r => r.Deleted == 0)
-                .Join(_context.PurchasedRequisitions, r => r.PrId, p => p.Id, (r, p) => new { r, p })
-                .Join(_context.PrProducts, combined => combined.p.Id, prProd => prProd.Id, (combined, prProd) => new {combined, prProd})
-                .Join(_context.Products, prCombine => prCombine.prProd.ProductId, prod => prod.Id, (prCombine, prod) => new
-                {
-                    RfqId = prCombine.combined.r.Id,
-                    RfqStatus = prCombine.combined.r.Status,
-                    PrTitle = prCombine.combined.p.Title,
-                    PrQuantity = prCombine.combined.p.Quantity,
-                    PrEstimatedBudget = prCombine.combined.p.EstimatedBudget,
-                    PrDeliveryDate = prCombine.combined.p.DeliveryDate,
-                    PrNote = prCombine.combined.p.Note,
-                    PrProducts = new 
-                    {
-                        ProductName = prod.Name,
-                        ProductCompany = prod.Company,
-                        ProductDescription = prod.Description,
-                        ProductUPC = prod.Upc,
-                    },
-                    Documents = _context.Documents
-                    .Where(d => d.BelongName == "rfq" && d.BelongId == prCombine.combined.r.Id)
-                    .Select(d => new
-                    {
-                        d.Id,
-                        DocumentUrl =  d.Url + d.EncodedFileName
+            var rfqs = await _context.Database.SqlQuery<RfqDetailDto>($"EXEC sp_GetAllRfq").ToListAsync();
+            //var rfqs = await _context.Rfqs.Where(r => r.Deleted == 0)
+            //    .Join(_context.PurchasedRequisitions, r => r.PrId, p => p.Id, (r, p) => new { r, p })
+            //    .Join(_context.PrProducts, combined => combined.p.Id, prProd => prProd.Id, (combined, prProd) => new {combined, prProd})
+            //    .Join(_context.Products, prCombine => prCombine.prProd.ProductId, prod => prod.Id, (prCombine, prod) => new
+            //    {
+            //        RfqId = prCombine.combined.r.Id,
+            //        RfqStatus = prCombine.combined.r.Status,
+            //        PrTitle = prCombine.combined.p.Title,
+            //        PrQuantity = prCombine.combined.p.Quantity,
+            //        PrEstimatedBudget = prCombine.combined.p.EstimatedBudget,
+            //        PrDeliveryDate = prCombine.combined.p.DeliveryDate,
+            //        PrNote = prCombine.combined.p.Note,
+            //        PrProducts = new 
+            //        {
+            //            ProductName = prod.Name,
+            //            ProductCompany = prod.Company,
+            //            ProductDescription = prod.Description,
+            //            ProductUPC = prod.Upc,
+            //        },
+            //        Documents = _context.Documents
+            //        .Where(d => d.BelongName == "rfq" && d.BelongId == prCombine.combined.r.Id)
+            //        .Select(d => new
+            //        {
+            //            d.Id,
+            //            DocumentUrl =  d.Url + d.EncodedFileName
                        
-                    }).ToList()
+            //        }).ToList()
                 
 
-                }).ToListAsync();
+            //    }).ToListAsync();
             if(rfqs.Count == 0 )
             {
                 return new ResponseModel { Success = false, Message = "No RFQ Found" };

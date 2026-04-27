@@ -64,7 +64,7 @@ namespace ProcurmentProject.Repositories
         public async Task<ResponseModel> GetAllProduct()
         {
             var product = await _context.Products.Where(x => x.Deleted == 0).ToListAsync();
-            if (product != null)
+            if (product == null)
             { 
                 return new ResponseModel
                 {

@@ -62,12 +62,19 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> GetAllRfqs()
         {
-            var result = await _rfq.GetAllRfqs();
-            if (!result.Success)
+            try
             {
-                return BadRequest(result.Message);
+                var result = await _rfq.GetAllRfqs();
+                if (!result.Success)
+                {
+                    return BadRequest(result.Message);
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpPost("update-rfq")]

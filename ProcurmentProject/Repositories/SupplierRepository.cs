@@ -3,15 +3,18 @@ using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ProcurmentProject.Repositories
 {
     public class SupplierRepository: ISupplier
     {
         private readonly ProcurmentSystemContext _context;
-        public SupplierRepository(ProcurmentSystemContext context)
+        private readonly IMemoryCache _cache;
+        public SupplierRepository(ProcurmentSystemContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
         public async Task<ResponseModel> AddSupplier(SuppliersDto supplier)
         {
@@ -29,6 +32,7 @@ namespace ProcurmentProject.Repositories
             };
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
+            _cache.Remove(supplier);
             var supplierRoleId = _context.Roles.Where(p => p.Name == "Supplier").Select(pp => new { id = pp.Id }).FirstOrDefault();
             if (supplierRoleId == null)
             {
@@ -48,6 +52,7 @@ namespace ProcurmentProject.Repositories
             };
             _context.Suppliers.Add(newSupplier);
             await _context.SaveChangesAsync();
+            _cache.Remove(supplier);
             return new ResponseModel
             {
                 Success = true,
@@ -79,7 +84,9 @@ namespace ProcurmentProject.Repositories
 
             supplier.CompanyName = supplierDto.CompanyName;
             supplier.NtnTaxNumber = supplierDto.NtnTaxNumber;
+
             await _context.SaveChangesAsync();
+            _cache.Remove(supplier);
             return new ResponseModel { Success = true, Message = "Supplier Update Successfully" };
         }
         
@@ -100,23 +107,33 @@ namespace ProcurmentProject.Repositories
             }
             supplierUser.Deleted = 1;
             supplier.Deleted = 1;
+
+            _cache.Remove(supplier);
             await _context.SaveChangesAsync();
             return new ResponseModel { Success = true, Message = "Supplier Deleted Successfully" };
         }
         public async Task<ResponseModel> GetAllSupplier()
         {
-            var suppliers = await _context.Suppliers
-                .Where(s => s.Deleted == 0)
-                .Select(supplier => new
-                {
-                    supplierId = supplier.Id,
-                    Name = supplier.User.Name,
-                    Email = supplier.User.Email,
-                    Phone = supplier.User.Phone,
-                    CompanyName = supplier.CompanyName,
-                    NtnNumber = supplier.NtnTaxNumber,
-                }).ToListAsync();
-            if(suppliers.Count == 0)
+            var cacheKey = "Supplier";
+
+            if (!_cache.TryGetValue(cacheKey, out var suppliers))
+            {
+                  suppliers = await _context.Suppliers
+                 .Where(s => s.Deleted == 0)
+                 .Select(supplier => new
+                 {
+                     supplierId = supplier.Id,
+                     Name = supplier.User.Name,
+                     Email = supplier.User.Email,
+                     Phone = supplier.User.Phone,
+                     CompanyName = supplier.CompanyName,
+                     NtnNumber = supplier.NtnTaxNumber,
+                 }).ToListAsync();
+                _cache.Set(cacheKey, suppliers, TimeSpan.FromHours(1));
+
+            }
+         
+            if(suppliers == null)
             {
                 return new ResponseModel { Success = false, Message = "No Data Found" };
             }
