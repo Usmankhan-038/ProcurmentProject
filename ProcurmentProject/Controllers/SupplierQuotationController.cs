@@ -22,6 +22,10 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> AddSupplierQuotation(int supplierId, int productId, int rfqId, [FromBody] SupplierQuotationDto supplierQuotationDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _supplierQuotation.AddSupplierQuotation(supplierId, productId, rfqId, supplierQuotationDto);
             if (!result.Success)
             {
@@ -74,6 +78,10 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> UpdateSupplierQuotation(int quotationId, [FromBody] SupplierQuotationDto supplierQuotationDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _supplierQuotation.UpdateSupplierQuotation(quotationId, supplierQuotationDto);
             if (!result.Success)
             {

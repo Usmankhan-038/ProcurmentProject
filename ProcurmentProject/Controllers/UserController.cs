@@ -42,15 +42,7 @@ namespace ProcurmentProject.Controllers
             {
                 return BadRequest(isLogin.Message);
             }
-            var token = isLogin.Data?.ToString();
-            Response.Cookies.Append("X-AccessToken", token!, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.Now.AddMinutes(15)
-            });
-            return Ok(new ResponseModel { Success = true, Message = isLogin.Message, Data = token });
+            return Ok(isLogin);
         }
     }
 }

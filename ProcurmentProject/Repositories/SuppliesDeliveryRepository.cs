@@ -102,7 +102,7 @@ namespace ProcurmentProject.Repositories
                         documentId = d.Id,
                         fileName = d.OriginalFileName,
                         encodedFileName = d.EncodedFileName,
-                        url = d.Url
+                        url = $"/uploads/{d.EncodedFileName}"
                     }).FirstOrDefault()
             }).ToListAsync();
 

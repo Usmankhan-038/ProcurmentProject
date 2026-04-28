@@ -38,7 +38,8 @@ namespace ProcurmentProject.Helper
                 throw new InvalidDataException("Invalid file content type. Only images, PDF, and Word files are allowed.");
             }
 
-            string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+            var uploadsFolder = "uploads";
+            string folderPath = Path.Combine(Directory.GetCurrentDirectory(), uploadsFolder);
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
@@ -59,7 +60,7 @@ namespace ProcurmentProject.Helper
                 BelongName = belongingName,
                 EncodedFileName = encodedFileName,
                 OriginalFileName = originalFileName,
-                Url = folderPath
+                Url = uploadsFolder
             };
 
             return document;

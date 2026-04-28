@@ -24,6 +24,10 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> AddSupplier([FromBody] SuppliersDto suppliersDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var supplier = await _supplier.AddSupplier(suppliersDto);
             if(!supplier.Success)
             {
@@ -36,6 +40,10 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> UpdateSupplier( int Id,[FromBody] SuppliersDto suppliersDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var supplier = await _supplier.UpdateSupplier(Id,suppliersDto);
             if (!supplier.Success)
             {

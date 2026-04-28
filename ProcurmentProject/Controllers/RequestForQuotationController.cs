@@ -23,6 +23,10 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> CreateRfq(int prId, [FromForm] RfqDto rfqDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _rfq.CreateRfq(prId, rfqDto);
             if (!result.Success)
             {
@@ -82,6 +86,10 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> UpdateRfq(int rfqId, [FromForm] RfqDto rfqDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _rfq.UpdateRfq(rfqId, rfqDto);
             if (!result.Success)
             {

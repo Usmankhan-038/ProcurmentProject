@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
-using System.Threading.Tasks;
-using System.Security.Claims;
 using ProcurmentProject.Helper;
+using ProcurmentProject.Filters;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,6 +24,7 @@ namespace ProcurmentProject.Controllers
         }
         [Authorize]
         [HttpPost("add-company")]
+        [HasPermission("company", "create")]
         public async Task<ActionResult> AddCompany(CompanyDto company)
         { 
             
@@ -41,6 +41,7 @@ namespace ProcurmentProject.Controllers
         }
         [Authorize]
         [HttpGet("companies")]
+        [HasPermission("company", "read")]
         public async Task<ActionResult> GetAllCompany()
         { 
             var companyList = await _company.GetAllCompany();

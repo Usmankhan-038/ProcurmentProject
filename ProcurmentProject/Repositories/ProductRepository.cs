@@ -12,10 +12,12 @@ namespace ProcurmentProject.Repositories
     {
         private readonly ProcurmentSystemContext _context;
         private readonly IMemoryCache _cache;
-        public ProductRepository(ProcurmentSystemContext context, IMemoryCache cache) 
+        private readonly ILogger<ProductRepository> _logger;
+        public ProductRepository(ProcurmentSystemContext context, IMemoryCache cache, ILogger<ProductRepository> logger) 
         {
             _context = context;
             _cache = cache;
+            _logger = logger;
         }
         public async Task<ResponseModel> AddProduct(ProductDto prodDto)
         {
@@ -27,25 +29,46 @@ namespace ProcurmentProject.Repositories
                     Message = "Please Enter Valid Data" 
                 };
             }
-            var product = new Product
+            var upcExists = await _context.Products.AnyAsync(p => p.Deleted == 0 && p.Upc == prodDto.Upc);
+            if (upcExists)
             {
-                Name = prodDto.Name,
-                Company = prodDto.Company,
-                Description = prodDto.Description,
-                Upc = prodDto.Upc,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "A product with this UPC already exists."
+                };
+            }
+            try
+            {
+                var product = new Product
+                {
+                    Name = prodDto.Name,
+                    Company = prodDto.Company,
+                    Description = prodDto.Description,
+                    Upc = prodDto.Upc,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
 
-            };
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-            _cache.Remove("Products");
-            return new ResponseModel 
-            { 
-                Success = true, 
-                Message = "Product Add successfully", 
-                Id = product.Id 
-            };
+                };
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+                _cache.Remove("Products");
+                return new ResponseModel
+                {
+                    Success = true,
+                    Message = "Product Add successfully",
+                    Id = product.Id
+                };
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Error adding product with UPC {Upc}.", prodDto.Upc);
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "Unable to add product. Please verify the data and try again."
+                };
+            }
         }
         public async Task<ResponseModel> GetProductById(int productId)
         {
@@ -98,16 +121,38 @@ namespace ProcurmentProject.Repositories
                     Message = "No Product Found with this Id" 
                 };
             }
+            var upcExists = await _context.Products
+                .AnyAsync(p => p.Deleted == 0 && p.Upc == product.Upc && p.Id != productId);
+            if (upcExists)
+            {
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "A product with this UPC already exists."
+                };
+            }
             result.Name = product.Name;
             result.Company = product.Company;
             result.Description = product.Description;
             result.Upc = product.Upc;   
             result.UpdatedAt= DateTime.UtcNow;
 
-            _context.Products.Update(result);
-            await _context.SaveChangesAsync();
-            _cache.Remove("Products");
-            return new ResponseModel { Success = true, Message = "Product Successfully" };
+            try
+            {
+                _context.Products.Update(result);
+                await _context.SaveChangesAsync();
+                _cache.Remove("Products");
+                return new ResponseModel { Success = true, Message = "Product Successfully" };
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Error updating product {ProductId} with UPC {Upc}.", productId, product.Upc);
+                return new ResponseModel
+                {
+                    Success = false,
+                    Message = "Unable to update product. Please verify the data and try again."
+                };
+            }
         }
         public async Task<ResponseModel> DeleteProduct(int productId)
         {

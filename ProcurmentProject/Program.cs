@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProcurmentProject.Data;
+using ProcurmentProject.Dto;
 using ProcurmentProject.Filters;
 using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
@@ -100,6 +102,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionHandler = context.Features.Get<IExceptionHandlerFeature>();
+        if (exceptionHandler?.Error != null)
+        {
+            app.Logger.LogError(exceptionHandler.Error, "Unhandled exception.");
+        }
+
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new ResponseModel
+        {
+            Success = false,
+            Message = "An unexpected error occurred."
+        });
+    });
+});
 
 app.UseHttpsRedirection();
 

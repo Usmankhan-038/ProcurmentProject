@@ -22,6 +22,10 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> AddPproduct(ProductDto product)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             if (product == null)
             {
                 return BadRequest("Please Enter Product Data"); 
@@ -67,6 +71,10 @@ namespace ProcurmentProject.Controllers
 
         public async Task<IActionResult> UpdateProduct(int prodId,ProductDto prod)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _prod.UpdateProduct(prodId,prod);
             if (!result.Success)
             {
