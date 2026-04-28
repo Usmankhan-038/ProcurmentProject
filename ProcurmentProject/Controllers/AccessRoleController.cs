@@ -61,7 +61,7 @@ namespace ProcurmentProject.Controllers
             {
                 return BadRequest(deletedRole.Message);
             }
-            _cache.Remove($"perm_{id}");
+            _cache.Remove($"perm_role_{id}");
             return Ok(deletedRole);
         }
    
@@ -75,7 +75,7 @@ namespace ProcurmentProject.Controllers
             {
                 return BadRequest(updateRole.Message);
             }
-            _cache.Remove($"perm_{id}");
+            _cache.Remove($"perm_role_{id}");
             return Ok(updateRole);
         }
     }

@@ -6,7 +6,7 @@ namespace ProcurmentProject.Interfaces
     {
         public Task<ResponseModel> CreateUser(SignUpDto user);
         public Task<ResponseModel> Login(string userEmail, string password);
-        public string GenerateAccessToken(int id, string role);
+        public string GenerateAccessToken(int id, int roleId, string role);
 
     }
 }

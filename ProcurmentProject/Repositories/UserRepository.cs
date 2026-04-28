@@ -96,12 +96,14 @@ namespace ProcurmentProject.Repositories
             var userRole = _context.UserRoles
                 .Include(ur => ur.Role)
                 .Where(u => u.UserId == user.Id)
-                .Select(u => u.Role.Name)
-                .FirstOrDefault() ?? "User";
+                .Select(u => new { u.RoleId, u.Role.Name })
+                .FirstOrDefault();
+            var roleId = Convert.ToInt32(userRole?.RoleId ?? 0);
+            var roleName = userRole?.Name ?? "User";
 
-            if (user != null || BCrypt.Net.BCrypt.Verify(password, user.Password))
+            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.Password))
             {
-                var token =  GenerateAccessToken(user.Id,userRole);
+                var token =  GenerateAccessToken(user.Id, roleId, roleName);
                 return new ResponseModel { Success = true, Message = "Login Successfully", Data = token };
             } else
             {
@@ -109,7 +111,7 @@ namespace ProcurmentProject.Repositories
             }
                 
         }
-        public string GenerateAccessToken(int id,string role)
+        public string GenerateAccessToken(int id,int roleId, string role)
         {
             var signingKey = _config.GetConnectionString("SigningKey");
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey!));
@@ -118,7 +120,8 @@ namespace ProcurmentProject.Repositories
             var claim = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier,id.ToString() ),
-                new Claim(ClaimTypes.Role, role)
+                new Claim(ClaimTypes.Role, role),
+                new Claim("role_id", roleId.ToString())
 
             };
 

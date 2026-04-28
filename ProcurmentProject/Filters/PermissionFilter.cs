@@ -35,7 +35,13 @@ namespace ProcurmentProject.Filters
                 return;
             }
             var userId = int.Parse(claimUserId!);
-            string cacheKey = $"perm_{userId}";
+            var claimRoleId = user.FindFirst("role_id")?.Value;
+            if (claimRoleId == null || !int.TryParse(claimRoleId, out var roleId))
+            {
+                context.Result = new JsonResult(new { message = "Unauthorized Access" }) { StatusCode = 403 };
+                return;
+            }
+            string cacheKey = $"perm_role_{roleId}";
             if (!_cache.TryGetValue(cacheKey, out string? permissionJson))
             {
 
