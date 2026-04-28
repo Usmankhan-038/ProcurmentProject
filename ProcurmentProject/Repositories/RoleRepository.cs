@@ -3,15 +3,18 @@ using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ProcurmentProject.Repositories
 {
     public class RoleRepository : IRole
     {
         private readonly ProcurmentSystemContext _context;
-        public RoleRepository(ProcurmentSystemContext context)
+        private readonly IMemoryCache _cache;
+        public RoleRepository(ProcurmentSystemContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         public async Task<ResponseModel> AddAccessRole(RoleDto role)
@@ -35,6 +38,8 @@ namespace ProcurmentProject.Repositories
 
             _context.Roles.Add(accessRole);
             await _context.SaveChangesAsync();
+            _cache.Remove("Roles");
+            _cache.Remove("UserRoles");
 
             return new ResponseModel
             {
@@ -67,24 +72,29 @@ namespace ProcurmentProject.Repositories
 
         public async Task<ResponseModel> GetAllUserRole()
         {
-            var userRole = await _context.Users
-                .Include(ur => ur.UserRoles)
-                    .ThenInclude(r => r.Role)
-                .Where(r => r.Deleted == 0)
-                .Select(u => new
-                {
-                    u.Id,
-                    u.Name,
-                    u.Email,
-                    u.Phone,
-                    roleId = u.UserRoles.Select(ur => ur.Role.Id).FirstOrDefault(),
-                    roleName = u.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault(),
-                    permission = u.UserRoles.Select(ur => ur.Role.Permission).FirstOrDefault(),
-                })
-                .Where(r => r.roleName != null && r.permission != null)
-                .ToListAsync();
+            var cacheKey = "UserRoles";
+            if (!_cache.TryGetValue(cacheKey, out dynamic? userRole))
+            {
+                userRole = await _context.Users
+                    .Include(ur => ur.UserRoles)
+                        .ThenInclude(r => r.Role)
+                    .Where(r => r.Deleted == 0)
+                    .Select(u => new
+                    {
+                        u.Id,
+                        u.Name,
+                        u.Email,
+                        u.Phone,
+                        roleId = u.UserRoles.Select(ur => ur.Role.Id).FirstOrDefault(),
+                        roleName = u.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault(),
+                        permission = u.UserRoles.Select(ur => ur.Role.Permission).FirstOrDefault(),
+                    })
+                    .Where(r => r.roleName != null && r.permission != null)
+                    .ToListAsync();
+                _cache.Set(cacheKey, (object)userRole, TimeSpan.FromHours(1));
+            }
 
-            if (userRole.Count == 0)
+            if (userRole?.Count == 0)
             {
                 return new ResponseModel
                 {
@@ -115,6 +125,8 @@ namespace ProcurmentProject.Repositories
             }
             role.Deleted = 1;
             await _context.SaveChangesAsync();
+            _cache.Remove("Roles");
+            _cache.Remove("UserRoles");
             return new ResponseModel
             {
                 Success = true,
@@ -138,6 +150,8 @@ namespace ProcurmentProject.Repositories
             accessRole.Permission = role.Permission;
 
             await _context.SaveChangesAsync();
+            _cache.Remove("Roles");
+            _cache.Remove("UserRoles");
             return new ResponseModel
             {
                Success =  true, 

@@ -3,15 +3,18 @@ using ProcurmentProject.Models;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ProcurmentProject.Repositories
 {
     public class CompanyRepository : ICompany
     {
         private readonly ProcurmentSystemContext _context;
-        public CompanyRepository(ProcurmentSystemContext context)
+        private readonly IMemoryCache _cache;
+        public CompanyRepository(ProcurmentSystemContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         public async Task<ResponseModel> AddCompany(CompanyDto company)
@@ -35,6 +38,7 @@ namespace ProcurmentProject.Repositories
 
             _context.Companies.Add(newCompany);
             await _context.SaveChangesAsync();
+            _cache.Remove("Companies");
 
             return new ResponseModel { 
                 Success = true, 
@@ -43,8 +47,13 @@ namespace ProcurmentProject.Repositories
         }
         public async Task<ResponseModel> GetAllCompany()
         {
-            var companies = await _context.Companies.Where(company => company.Deleted == 0).Select(company => new { company.Id, company.Name}).ToListAsync();
-            if (companies.Count == 0)
+            var cacheKey = "Companies";
+            if (!_cache.TryGetValue(cacheKey, out dynamic? companies))
+            {
+                companies = await _context.Companies.Where(company => company.Deleted == 0).Select(company => new { company.Id, company.Name}).ToListAsync();
+                _cache.Set(cacheKey, (object)companies, TimeSpan.FromHours(1));
+            }
+            if (companies?.Count == 0)
             {
                 return new ResponseModel
                 {

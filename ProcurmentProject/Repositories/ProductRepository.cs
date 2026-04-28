@@ -4,15 +4,18 @@ using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ProcurmentProject.Repositories
 {
     public class ProductRepository : IProduct
     {
         private readonly ProcurmentSystemContext _context;
-        public ProductRepository(ProcurmentSystemContext context) 
+        private readonly IMemoryCache _cache;
+        public ProductRepository(ProcurmentSystemContext context, IMemoryCache cache) 
         {
             _context = context;
+            _cache = cache;
         }
         public async Task<ResponseModel> AddProduct(ProductDto prodDto)
         {
@@ -36,6 +39,7 @@ namespace ProcurmentProject.Repositories
             };
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
+            _cache.Remove("Products");
             return new ResponseModel 
             { 
                 Success = true, 
@@ -63,9 +67,14 @@ namespace ProcurmentProject.Repositories
         }
         public async Task<ResponseModel> GetAllProduct()
         {
-            var product = await _context.Products.Where(x => x.Deleted == 0).ToListAsync();
+            var cacheKey = "Products";
+            if (!_cache.TryGetValue(cacheKey, out dynamic? product))
+            {
+                product = await _context.Products.Where(x => x.Deleted == 0).ToListAsync();
+                _cache.Set(cacheKey, (object)product, TimeSpan.FromHours(1));
+            }
             if (product == null)
-            { 
+            {
                 return new ResponseModel
                 {
                     Success = false,
@@ -97,6 +106,7 @@ namespace ProcurmentProject.Repositories
 
             _context.Products.Update(result);
             await _context.SaveChangesAsync();
+            _cache.Remove("Products");
             return new ResponseModel { Success = true, Message = "Product Successfully" };
         }
         public async Task<ResponseModel> DeleteProduct(int productId)
@@ -113,6 +123,7 @@ namespace ProcurmentProject.Repositories
             result.Deleted = 1;
             _context.Products.Update(result);
             await _context.SaveChangesAsync();
+            _cache.Remove("Products");
             return new ResponseModel
             {
                 Success = true,
