@@ -27,6 +27,7 @@ namespace ProcurmentProject.Repositories
                Title = prRequest.Title,
                DeliveryDate = prRequest.DeliveryDate,
                Note = prRequest.Note,
+               Deleted = 0,
                CreatedAt = DateTime.UtcNow,
                UpdatedAt = DateTime.UtcNow,
                UserId = userId

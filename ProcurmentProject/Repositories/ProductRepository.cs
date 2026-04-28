@@ -191,6 +191,7 @@ namespace ProcurmentProject.Repositories
             {
                 PrId = prId,
                 ProductId = productId,
+                Deleted = 0,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
