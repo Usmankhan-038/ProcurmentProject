@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using ProcurmentProject.Models;
 
-namespace ProcurmentProject.Data;
+namespace ProcurmentProject.Models;
 
 public partial class ProcurmentSystemContext : DbContext
 {
@@ -43,6 +42,7 @@ public partial class ProcurmentSystemContext : DbContext
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -129,6 +129,7 @@ public partial class ProcurmentSystemContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.Deleted).HasColumnName("deleted");
             entity.Property(e => e.PrId).HasColumnName("pr_id");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.UpdatedAt)
@@ -503,6 +504,7 @@ public partial class ProcurmentSystemContext : DbContext
 
             entity.HasOne(d => d.Role).WithMany(p => p.UserRoles)
                 .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_roles");
 
             entity.HasOne(d => d.User).WithMany(p => p.UserRoles)

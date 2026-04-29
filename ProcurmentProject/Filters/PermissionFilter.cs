@@ -14,8 +14,8 @@ namespace ProcurmentProject.Filters
         private string _action;
         private readonly IRole _role;
         private readonly PermissionChecker _permissionChecker;
-        private readonly IMemoryCache _cache;
-        public PermissionFilter(string module, string action,IRole role, PermissionChecker permissionChecker, IMemoryCache cache)
+        private readonly ICacheService _cache;
+        public PermissionFilter(string module, string action,IRole role, PermissionChecker permissionChecker, ICacheService cache)
         {
             _module = module;
             _action = action;
@@ -41,21 +41,26 @@ namespace ProcurmentProject.Filters
                 context.Result = new JsonResult(new { message = "Unauthorized Access" }) { StatusCode = 403 };
                 return;
             }
-            string cacheKey = $"perm_role_{roleId}";
-            if (!_cache.TryGetValue(cacheKey, out string? permissionJson))
-            {
+            string cacheKey = CachKeys.UserPermissionKey(roleId);
 
-                var rolePermission = await _role.GetPermissionByUserId(userId);
-                if (!rolePermission.Success || rolePermission.Data == null)
-                {
-                    context.Result = new JsonResult(new { message = "Unauthorized Access" }) { StatusCode = 403 };
-                    return;
-                }
+            var response = await _cache.GetOrSetCache(cacheKey, () => _role.GetPermissionByUserId(userId));
 
-                permissionJson = rolePermission.Data.ToString();
+            var permissionJson = response?.Data?.ToString() ?? "";
 
-                _cache.Set(cacheKey, permissionJson, TimeSpan.FromHours(1));
-            }
+            //if (!_cache.TryGetValue(cacheKey, out string? permissionJson))
+            //{
+
+            //    var rolePermission = await ;
+            //    if (!rolePermission.Success || rolePermission.Data == null)
+            //    {
+            //        context.Result = new JsonResult(new { message = "Unauthorized Access" }) { StatusCode = 403 };
+            //        return;
+            //    }
+
+            //    permissionJson = rolePermission.Data.ToString();
+
+            //    _cache.Set(cacheKey, permissionJson, TimeSpan.FromHours(1));
+            //}
 
 
             if(!_permissionChecker.HasPermission(permissionJson!, _module, _action))

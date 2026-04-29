@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Filters;
 using ProcurmentProject.Helper;
@@ -88,6 +87,7 @@ builder.Services.AddScoped<ISuppliesDelivery, SuppliesDeliveryRepository>();
 
 // services Dependency Injection
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<DocumentUploader>();
 
 // stateless class one instance for whole project

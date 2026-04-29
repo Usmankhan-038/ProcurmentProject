@@ -15,10 +15,9 @@ public partial class PrProduct
 
     public DateTime? UpdatedAt { get; set; }
 
-    public byte? Deleted { get; set; }
+    public byte Deleted { get; set; }
 
     public virtual PurchasedRequisition? Pr { get; set; }
 
     public virtual Product? Product { get; set; }
-
 }
