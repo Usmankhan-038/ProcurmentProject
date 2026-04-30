@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace ProcurmentProject.Models;
+namespace ProcurmentProject.Data.Models;
 
 public partial class ProcurmentSystemContext : DbContext
 {
@@ -33,8 +33,6 @@ public partial class ProcurmentSystemContext : DbContext
 
     public virtual DbSet<SupplierQuotation> SupplierQuotations { get; set; }
 
-    public virtual DbSet<SupplierDeliveryView> SupplierDeliveryViews { get; set; }
-
     public virtual DbSet<SuppliesDelivery> SuppliesDeliveries { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -43,9 +41,11 @@ public partial class ProcurmentSystemContext : DbContext
 
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
+    public virtual DbSet<VwSupplierDelivery> VwSupplierDeliveries { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
+        => optionsBuilder.UseSqlServer("Server=localhost\\MSSQLServer01;Database=procurment_system;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -363,23 +363,6 @@ public partial class ProcurmentSystemContext : DbContext
                 .HasConstraintName("FK__supplier___suppl__151B244E");
         });
 
-        modelBuilder.Entity<SupplierDeliveryView>(entity =>
-        {
-            entity.HasNoKey();
-
-            entity.ToView("vw_SupplierDelivery");
-
-            entity.Property(e => e.DeliveryNote).HasColumnName("DeliveryNote");
-            entity.Property(e => e.DeliveryStatus).HasColumnName("DeliveryStatus");
-            entity.Property(e => e.FinalPrice).HasColumnName("finalPrice");
-            entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.RecevingDatetime).HasColumnName("receving_datetime");
-            entity.Property(e => e.RecivedByName).HasColumnName("RecivedByName");
-            entity.Property(e => e.RfqStatus).HasColumnName("rfqStatus");
-            entity.Property(e => e.Title).HasColumnName("title");
-            entity.Property(e => e.UnitPrice).HasColumnName("UnitPrice");
-        });
-
         modelBuilder.Entity<SuppliesDelivery>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__supplies__3213E83F733FA4D4");
@@ -530,6 +513,40 @@ public partial class ProcurmentSystemContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__user_role__user___6754599E");
+        });
+
+        modelBuilder.Entity<VwSupplierDelivery>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vw_SupplierDelivery");
+
+            entity.Property(e => e.DeliveryNote).HasColumnType("text");
+            entity.Property(e => e.DeliveryStatus)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.FinalPrice)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("finalPrice");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.RecevingDatetime)
+                .HasColumnType("datetime")
+                .HasColumnName("receving_datetime");
+            entity.Property(e => e.RecivedByName)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.RfqStatus)
+                .HasMaxLength(10)
+                .IsUnicode(false)
+                .HasColumnName("rfqStatus");
+            entity.Property(e => e.Title)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("title");
+            entity.Property(e => e.UnitPrice)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         OnModelCreatingPartial(modelBuilder);

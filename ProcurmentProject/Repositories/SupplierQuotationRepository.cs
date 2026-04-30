@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 //using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 
 namespace ProcurmentProject.Repositories
 {

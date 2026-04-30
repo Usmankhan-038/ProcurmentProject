@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
 using System.Threading.Tasks;

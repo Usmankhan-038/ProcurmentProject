@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProcurmentProject.Interfaces;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 using System.Transactions;
 using System.Text;
 using System.Security.Claims;

@@ -1,4 +1,5 @@
-﻿using ProcurmentProject.Models;
+﻿//using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
 using Microsoft.EntityFrameworkCore;

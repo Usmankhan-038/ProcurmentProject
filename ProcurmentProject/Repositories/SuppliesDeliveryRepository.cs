@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 
 namespace ProcurmentProject.Repositories
 {

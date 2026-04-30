@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ProcurmentProject.Models;
+namespace ProcurmentProject.Data.Models;
 
 public partial class PurchasedRequisition
 {

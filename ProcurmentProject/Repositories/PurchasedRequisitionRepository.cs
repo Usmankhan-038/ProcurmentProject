@@ -1,6 +1,6 @@
 ﻿using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ProcurmentProject.Repositories

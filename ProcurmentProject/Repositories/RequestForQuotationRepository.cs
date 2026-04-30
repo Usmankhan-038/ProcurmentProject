@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 using System.Data;
 using System.Reflection.Metadata;
 using System.Xml.Linq;
