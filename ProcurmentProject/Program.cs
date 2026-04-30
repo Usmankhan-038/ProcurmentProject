@@ -8,7 +8,7 @@ using ProcurmentProject.Dto;
 using ProcurmentProject.Filters;
 using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 using ProcurmentProject.Repositories;
 using ProcurmentProject.Services;
 using System.Text;

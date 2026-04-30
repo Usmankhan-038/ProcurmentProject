@@ -1,4 +1,4 @@
-﻿using ProcurmentProject.Models;
+﻿using ProcurmentProject.Data.Models;
 using System.Globalization;
 
 namespace ProcurmentProject.Helper

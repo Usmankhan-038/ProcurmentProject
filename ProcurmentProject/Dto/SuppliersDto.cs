@@ -1,4 +1,4 @@
-﻿using ProcurmentProject.Models;
+﻿using ProcurmentProject.Data.Models;
 
 namespace ProcurmentProject.Dto
 {

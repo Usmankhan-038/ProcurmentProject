@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Filters;
 using ProcurmentProject.Interfaces;
-using ProcurmentProject.Models;
 using System.Security.Claims;
 
 namespace ProcurmentProject.Controllers

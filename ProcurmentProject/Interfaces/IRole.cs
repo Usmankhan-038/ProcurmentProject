@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using ProcurmentProject.Dto;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 
 namespace ProcurmentProject.Interfaces
 {

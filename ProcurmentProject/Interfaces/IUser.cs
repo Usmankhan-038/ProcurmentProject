@@ -1,5 +1,5 @@
 ﻿using ProcurmentProject.Dto;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 namespace ProcurmentProject.Interfaces
 {
     public interface IUser

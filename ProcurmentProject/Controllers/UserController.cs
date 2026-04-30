@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
-using ProcurmentProject.Models;
+using ProcurmentProject.Data.Models;
 
 
 namespace ProcurmentProject.Controllers

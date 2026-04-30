@@ -177,7 +177,7 @@ namespace ProcurmentProject.Repositories
 
         public async Task<ResponseModel> GetSupplierDeliveryView()
         {
-            var deliveries = await _context.SupplierDeliveryViews
+            var deliveries = await _context.VwSupplierDeliveries
                 .AsNoTracking()
                 .Select(view => new SupplierDeliveryViewDto
                 {
