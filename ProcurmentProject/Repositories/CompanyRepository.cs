@@ -48,10 +48,12 @@ namespace ProcurmentProject.Repositories
         public async Task<ResponseModel> GetAllCompany()
         {
             var cacheKey = "Companies";
-            if (!_cache.TryGetValue(cacheKey, out dynamic? companies))
+            if (!_cache.TryGetValue(cacheKey, out List<ActiveCompany>? companies))
             {
-                companies = await _context.Companies.Where(company => company.Deleted == 0).Select(company => new { company.Id, company.Name}).ToListAsync();
-                _cache.Set(cacheKey, (object)companies, TimeSpan.FromHours(1));
+                
+                companies = await _context.ActiveCompanies.ToListAsync();
+
+                _cache.Set(cacheKey, companies, TimeSpan.FromHours(1));
             }
             if (companies?.Count == 0)
             {

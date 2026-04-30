@@ -43,6 +43,8 @@ public partial class ProcurmentSystemContext : DbContext
 
     public virtual DbSet<VwSupplierDelivery> VwSupplierDeliveries { get; set; }
 
+    public DbSet<ActiveCompany> ActiveCompanies { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
@@ -548,6 +550,11 @@ public partial class ProcurmentSystemContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
         });
+
+        modelBuilder.Entity<ActiveCompany>()
+        .HasNoKey()
+        .ToFunction("GetActiveCompanies");
+      
 
         OnModelCreatingPartial(modelBuilder);
     }
