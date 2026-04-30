@@ -1,7 +1,6 @@
 ﻿using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-//using ProcurmentProject.Data;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Models;
 using System.Transactions;
@@ -11,7 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using ProcurmentProject.Dto;
 using Azure;
 
-//using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 namespace ProcurmentProject.Repositories
 {
     public class UserRepository : IUser
