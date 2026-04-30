@@ -33,6 +33,8 @@ public partial class ProcurmentSystemContext : DbContext
 
     public virtual DbSet<SupplierQuotation> SupplierQuotations { get; set; }
 
+    public virtual DbSet<SupplierDeliveryView> SupplierDeliveryViews { get; set; }
+
     public virtual DbSet<SuppliesDelivery> SuppliesDeliveries { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -359,6 +361,23 @@ public partial class ProcurmentSystemContext : DbContext
             entity.HasOne(d => d.Supplier).WithMany(p => p.SupplierQuotations)
                 .HasForeignKey(d => d.SupplierId)
                 .HasConstraintName("FK__supplier___suppl__151B244E");
+        });
+
+        modelBuilder.Entity<SupplierDeliveryView>(entity =>
+        {
+            entity.HasNoKey();
+
+            entity.ToView("vw_SupplierDelivery");
+
+            entity.Property(e => e.DeliveryNote).HasColumnName("DeliveryNote");
+            entity.Property(e => e.DeliveryStatus).HasColumnName("DeliveryStatus");
+            entity.Property(e => e.FinalPrice).HasColumnName("finalPrice");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.RecevingDatetime).HasColumnName("receving_datetime");
+            entity.Property(e => e.RecivedByName).HasColumnName("RecivedByName");
+            entity.Property(e => e.RfqStatus).HasColumnName("rfqStatus");
+            entity.Property(e => e.Title).HasColumnName("title");
+            entity.Property(e => e.UnitPrice).HasColumnName("UnitPrice");
         });
 
         modelBuilder.Entity<SuppliesDelivery>(entity =>

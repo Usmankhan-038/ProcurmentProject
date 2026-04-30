@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;

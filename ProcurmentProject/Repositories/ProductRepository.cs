@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ProcurmentProject.Data;
+using ProcurmentProject.Models;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
-using ProcurmentProject.Models;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 

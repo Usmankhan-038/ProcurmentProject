@@ -1,11 +1,10 @@
-﻿using ProcurmentProject.Data;
-using ProcurmentProject.Models;
+﻿using ProcurmentProject.Models;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace ProcurmentProject.Data
+namespace ProcurmentProject.Repositories
 {
     public class CompanyRepository : ICompany
     {

@@ -34,6 +34,18 @@ namespace ProcurmentProject.Controllers
             return Ok(result);
         }
 
+        [HttpGet("get-supplier-delivery-view")]
+        [HasPermission("supplies_delivery", "read")]
+        public async Task<IActionResult> GetSupplierDeliveryView()
+        {
+            var result = await _suppliesDelivery.GetSupplierDeliveryView();
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            return Ok(result);
+        }
+
         [HttpGet("get-supplies-delivery")]
         [HasPermission("supplier_delivery", "read")]
 

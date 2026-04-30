@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using ProcurmentProject.Data;
+//using ProcurmentProject.Data;
 using ProcurmentProject.Dto;
 using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
@@ -173,6 +173,37 @@ namespace ProcurmentProject.Repositories
             }
 
             return new ResponseModel { Success = true, Message = "Supplies Delivery Updated Successfully" };
+        }
+
+        public async Task<ResponseModel> GetSupplierDeliveryView()
+        {
+            var deliveries = await _context.SupplierDeliveryViews
+                .AsNoTracking()
+                .Select(view => new SupplierDeliveryViewDto
+                {
+                    Title = view.Title,
+                    RfqStatus = view.RfqStatus,
+                    UnitPrice = view.UnitPrice,
+                    Quantity = view.Quantity,
+                    FinalPrice = view.FinalPrice,
+                    RecivedByName = view.RecivedByName,
+                    DeliveryStatus = view.DeliveryStatus,
+                    DeliveryNote = view.DeliveryNote,
+                    RecevingDatetime = view.RecevingDatetime
+                })
+                .ToListAsync();
+
+            if (deliveries.Count == 0)
+            {
+                return new ResponseModel { Success = false, Message = "No Supplier Delivery Found" };
+            }
+
+            return new ResponseModel
+            {
+                Success = true,
+                Message = "Supplier Delivery Fetch Successfully",
+                Data = deliveries
+            };
         }
 
         public async Task<ResponseModel> DeleteSuppliesDelivery(int suppliesDeliveryId)

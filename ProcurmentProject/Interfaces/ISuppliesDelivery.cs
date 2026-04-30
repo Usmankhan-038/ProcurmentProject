@@ -7,6 +7,7 @@ namespace ProcurmentProject.Interfaces
     {
         public Task<ResponseModel> AddSuppliesDelivery(int rfqId, int supplierId, SupplierDeliveryDto supplierDeliveryDto);
         public Task<ResponseModel> GetSuppliesDelivery(int? suppliesDeliveryId = null);
+        public Task<ResponseModel> GetSupplierDeliveryView();
         public Task<ResponseModel> UpdateSuppliesDelivery(int suppliesDeliveryId, SupplierDeliveryDto supplierDeliveryDto);
         public Task<ResponseModel> DeleteSuppliesDelivery(int suppliesDeliveryId);
     }
