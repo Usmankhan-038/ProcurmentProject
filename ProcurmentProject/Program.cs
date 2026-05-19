@@ -14,6 +14,7 @@ using ProcurmentProject.Services;
 using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 
 builder.Services.AddControllers().AddJsonOptions(option => {
@@ -73,7 +74,10 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 // Db Injection
-builder.Services.AddDbContext<ProcurmentSystemContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ProcurmentSystemContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
+contextLifetime: ServiceLifetime.Transient, 
+optionsLifetime: ServiceLifetime.Transient
+);
 
 builder.Services.AddScoped<IUser, UserRepository>();
 builder.Services.AddScoped<ICompany, CompanyRepository>();
@@ -88,7 +92,7 @@ builder.Services.AddScoped<ISuppliesDelivery, SuppliesDeliveryRepository>();
 // services Dependency Injection
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
-builder.Services.AddScoped<DocumentUploader>();
+builder.Services.AddSingleton<DocumentUploader>();
 
 // stateless class one instance for whole project
 builder.Services.AddSingleton<PermissionChecker>();

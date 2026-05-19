@@ -138,5 +138,23 @@ namespace ProcurmentProject.Repositories
             }
           
         }
+        public async Task<ResponseModel> PrCount()
+        {
+            
+            var prstatusCount = await _context.PurchasedRequisitions
+                .Join(_context.Rfqs,
+                       pr => pr.Id,
+                       rfq => rfq.PrId,
+                       (pr, rfq) => new { pr, rfq }
+                       )
+                 .GroupBy(rfqStatus => rfqStatus.rfq.Status)
+                 .Select(groups => new
+                 {
+                     rfqstatus = groups.Key,
+                     TotalCount = groups.Count()
+                 }).ToListAsync();
+              var prCount = prstatusCount.Count();
+            return new ResponseModel { Success = true, Message = "Successfully fetch all product", Data = new { TotalPrCount = prCount ,prstatusCount = prstatusCount} };
+        }
     }
 }

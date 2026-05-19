@@ -100,6 +100,17 @@ namespace ProcurmentProject.Controllers
             return Ok(prRequest);
         }
 
+        [HttpGet("get-pr-detail")]
+        [HasPermission("pr_module", "read")]
+        public async Task<IActionResult> GetAllPrDetail()
+        {
+            var prRequest = await _pr.PrCount();
+            if (!prRequest.Success)
+            {
+                return BadRequest(prRequest.Message);
+            }
+            return Ok(prRequest);
+        }
         [HttpDelete("delete-pr-request")]
         [HasPermission("pr_module", "delete")]
 
@@ -112,6 +123,7 @@ namespace ProcurmentProject.Controllers
             }
             return Ok(prRequest);
         }
+
 
     }
 }

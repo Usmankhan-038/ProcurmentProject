@@ -9,6 +9,6 @@ namespace ProcurmentProject.Interfaces
         public Task<ResponseModel> GetPrRequest(int? prId = null);
         public Task<ResponseModel> UpdatePrRequest(int prId,PurchasedRequisitionDto prRequest);
         public Task<ResponseModel> DeletePrRequest(int prId);
-
+        public Task<ResponseModel> PrCount();
     }
 }
