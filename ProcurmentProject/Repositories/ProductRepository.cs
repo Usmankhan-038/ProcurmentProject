@@ -71,7 +71,7 @@ namespace ProcurmentProject.Repositories
         }
         public async Task<ResponseModel> GetProductById(int productId)
         {
-            var product = await _context.Products.Where(x => x.Deleted == 0).FirstOrDefaultAsync();
+            var product = await _context.Products.Where(x => x.Deleted == 0 && x.Id == productId).FirstOrDefaultAsync();
             if(product == null)
             {
                 return new ResponseModel 
