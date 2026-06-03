@@ -9,6 +9,7 @@ namespace ProcurmentProject.Dto
         public bool Success { get; set; } = default!;
         public Object? Data { get; set; } = null!;
         [JsonIgnore]
+
         public int? Id { get; set; } = null;
     }
 }
