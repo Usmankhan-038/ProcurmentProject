@@ -32,3 +32,16 @@ jobs:
             context: . 
             push: true
             tags: usmankhan68/procurment-project:latest
+
+        - name: Send Email Notification
+          uses: dawidd6/action-send-mail@v3
+          if: always() # 
+          with:
+            server_address: smtp.gmail.com
+            server_port: 465
+            username: ${{ secrets.MAIL_USERNAME }}
+            password: ${{ secrets.MAIL_PASSWORD }}
+            subject: GitHub Actions Build Notification
+            to: fk514955@gmail.com
+            from: GitHub Actions CI/CD
+            body: The Docker build and push job for ProcurmentProject has finished with status ${{ job.status }}.
