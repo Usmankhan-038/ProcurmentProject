@@ -28,10 +28,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include=".github\workflows\" />
     <Folder Include="uploads\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".github\workflows\cicd.yml" />
+    <None Include="C:\Users\usman\source\repos\ProcurmentProject\.github\workflows\cicd.yml" Link="cicd.yml" />
   </ItemGroup>
 </Project>
