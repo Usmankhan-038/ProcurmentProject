@@ -23,7 +23,6 @@ namespace ProcurmentProject.Services
         }
 
         public void RemoveCache(string key) => _cache.Remove(key);
-
         public T? GetCache<T>(string key)
         {
             if(!_cache.TryGetValue(key, out T result))
