@@ -99,7 +99,7 @@ namespace ProcurmentProject.Repositories
             {
                 Success = true,
                 Message = "PR Data Fetched",
-                Data = prRequest
+                Data = prId !=null ? (object)prRequest.FirstOrDefault()! : prRequest
             };
         }
 
@@ -153,7 +153,12 @@ namespace ProcurmentProject.Repositories
                      rfqstatus = groups.Key,
                      TotalCount = groups.Count()
                  }).ToListAsync();
-              var prCount = prstatusCount.Count();
+            var prCount = 0;
+            foreach (var item in prstatusCount )
+            {
+                prCount += item.TotalCount;
+            }
+              
             return new ResponseModel { Success = true, Message = "Successfully fetch all product", Data = new { TotalPrCount = prCount ,prstatusCount = prstatusCount} };
         }
     }
