@@ -22,7 +22,7 @@ namespace ProcurmentProject.Controllers
             _cache = cache;
         }
 
-        [HttpPost("add-roles")]
+        [HttpPost("add-role")]
         [HasPermission("role","create")]
         public async Task<IActionResult> AddRole([FromBody] RoleDto role)
         {
