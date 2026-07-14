@@ -10,13 +10,16 @@ namespace ProcurmentProject.Middleware
         private readonly string[] _blockIps = { "192.168.10.1" };
         private readonly string[] _blockAgent = { "sqlmap", "curl", "postman" };
         private readonly string[] _malaciousPayload = { "<script>", "union", "drop" };
-        public ApiProtectionMiddleware(RequestDelegate next)
+        private readonly ILogger<ApiProtectionMiddleware> _logger;
+        public ApiProtectionMiddleware(RequestDelegate next, ILogger<ApiProtectionMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
+            _logger.LogInformation("This is logging entire all request");
             var clientIp = context.Connection.RemoteIpAddress?.ToString();
             if (clientIp != null && _blockIps.Contains(clientIp))
             {
