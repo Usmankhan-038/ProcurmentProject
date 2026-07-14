@@ -4,7 +4,7 @@ using ProcurmentProject.Interfaces;
 
 namespace ProcurmentProject.Services
 {
-    public class CacheService :ICacheService
+    public class CacheService : ICacheService
     {
         private readonly IMemoryCache _cache;
         private TimeSpan _defaultExpiration  = TimeSpan.FromMinutes(60);
