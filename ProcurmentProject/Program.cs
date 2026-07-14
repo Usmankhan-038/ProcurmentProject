@@ -1,17 +1,18 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using ProcurmentProject.Dto;
-using ProcurmentProject.Filters;
 using ProcurmentProject.Helper;
 using ProcurmentProject.Interfaces;
 using ProcurmentProject.Data.Models;
 using ProcurmentProject.Repositories;
 using ProcurmentProject.Services;
 using System.Text;
+using Microsoft.OpenApi.Models;
+using ProcurmentProject.Middleware;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -24,7 +25,7 @@ builder.Services.AddControllers().AddJsonOptions(option => {
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMemoryCache();
-builder.Services.AddSwaggerGen();
+
 
 var signingKey = builder.Configuration.GetConnectionString("SigningKey");
 
@@ -62,7 +63,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         {
             new OpenApiSecurityScheme
-            {
+            { 
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
@@ -128,6 +129,8 @@ app.UseExceptionHandler(errorApp =>
 });
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ApiProtectionMiddleware>();
 
 app.UseAuthentication();
 
